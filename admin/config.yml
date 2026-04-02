@@ -16,7 +16,7 @@ backend:
   repo: sunriseautomatizaciones-beep/falcons-web
   branch: main
   auth_type: pkce
-  app_id: REEMPLAZAR_CON_TU_GITHUB_CLIENT_ID
+  app_id: Ov23ligfXGtQAF1SJKsm
 
 # Carpeta donde se guardan las imágenes subidas desde el CMS
 media_folder: "assets/images"

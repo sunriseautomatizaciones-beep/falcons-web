@@ -4,12 +4,10 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin · CDE Fuenlabrada Falcons</title>
-  <style>
-    body { margin: 0; font-family: sans-serif; background: #0A0E1A; color: white; }
-  </style>
 </head>
 <body>
-  <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+  <!-- Decap CMS v2 estable — sin bug de removeChild -->
+  <script src="https://unpkg.com/decap-cms@2.10.192/dist/decap-cms.js"></script>
   <script>
     CMS.init({
       config: {
@@ -33,9 +31,7 @@
                 file: "content/noticias.json",
                 fields: [
                   {
-                    label: "Noticias",
-                    name: "items",
-                    widget: "list",
+                    label: "Noticias", name: "items", widget: "list",
                     summary: "{{fields.titulo}}",
                     fields: [
                       { label: "Título",    name: "titulo",    widget: "string" },
@@ -43,8 +39,7 @@
                       { label: "Categoría", name: "categoria", widget: "select",
                         options: ["Partido", "Club", "Campo", "Convocatoria", "Otro"] },
                       { label: "Extracto",  name: "extracto",  widget: "text" },
-                      { label: "Imagen",    name: "imagen",    widget: "image", required: false,
-                        hint: "Sube una foto para esta noticia (opcional)" }
+                      { label: "Imagen",    name: "imagen",    widget: "image", required: false }
                     ]
                   }
                 ]
@@ -61,14 +56,12 @@
                 file: "content/galeria.json",
                 fields: [
                   {
-                    label: "Fotos",
-                    name: "items",
-                    widget: "list",
+                    label: "Fotos", name: "items", widget: "list",
                     summary: "{{fields.titulo}}",
                     fields: [
-                      { label: "Título / Descripción", name: "titulo",    widget: "string" },
-                      { label: "Imagen",               name: "imagen",    widget: "image" },
-                      { label: "Foto destacada (ocupa más espacio)", name: "destacada", widget: "boolean", default: false }
+                      { label: "Título",    name: "titulo",    widget: "string" },
+                      { label: "Imagen",    name: "imagen",    widget: "image" },
+                      { label: "Destacada", name: "destacada", widget: "boolean", default: false }
                     ]
                   }
                 ]
@@ -85,9 +78,7 @@
                 file: "content/plantilla.json",
                 fields: [
                   {
-                    label: "Jugadores",
-                    name: "items",
-                    widget: "list",
+                    label: "Jugadores", name: "items", widget: "list",
                     summary: "{{fields.nombre}} — {{fields.posicion}}",
                     fields: [
                       { label: "Nombre",   name: "nombre",   widget: "string" },
@@ -111,23 +102,19 @@
                 file: "content/partidos.json",
                 fields: [
                   {
-                    label: "Próximos partidos",
-                    name: "proximos",
-                    widget: "list",
+                    label: "Próximos partidos", name: "proximos", widget: "list",
                     summary: "{{fields.dia}} {{fields.mes}} — {{fields.rival}}",
                     fields: [
-                      { label: "Día",        name: "dia",       widget: "string", hint: "Ej: 12" },
-                      { label: "Mes",        name: "mes",       widget: "string", hint: "Ej: ABR" },
-                      { label: "Rival",      name: "rival",     widget: "string" },
-                      { label: "Competición",name: "comp",      widget: "string", default: "Liga Amateur Madrid" },
-                      { label: "Hora y lugar",name: "lugar",    widget: "string", hint: "Ej: 🏟 Jesús Huertas · 11:00h" },
-                      { label: "Condición",  name: "condicion", widget: "select", options: ["Local", "Visitante"] }
+                      { label: "Día",         name: "dia",       widget: "string", hint: "Ej: 12" },
+                      { label: "Mes",         name: "mes",       widget: "string", hint: "Ej: ABR" },
+                      { label: "Rival",       name: "rival",     widget: "string" },
+                      { label: "Competición", name: "comp",      widget: "string", default: "Liga Amateur Madrid" },
+                      { label: "Hora y lugar",name: "lugar",     widget: "string", hint: "Ej: 🏟 Jesús Huertas · 11:00h" },
+                      { label: "Condición",   name: "condicion", widget: "select", options: ["Local", "Visitante"] }
                     ]
                   },
                   {
-                    label: "Últimos resultados",
-                    name: "resultados",
-                    widget: "list",
+                    label: "Últimos resultados", name: "resultados", widget: "list",
                     summary: "{{fields.local}} {{fields.goles_local}}-{{fields.goles_visitante}} {{fields.visitante}}",
                     fields: [
                       { label: "Equipo local",    name: "local",           widget: "string" },

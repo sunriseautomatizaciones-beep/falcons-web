@@ -9,7 +9,144 @@
   </style>
 </head>
 <body>
-  <!-- Decap CMS — carga todo desde config.yml -->
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+  <script>
+    CMS.init({
+      config: {
+        backend: {
+          name: "github",
+          repo: "sunriseautomatizaciones-beep/falcons-web",
+          branch: "main",
+          auth_type: "pkce",
+          app_id: "Ov23ligfXGtQAF1SJKsm"
+        },
+        media_folder: "assets/images",
+        public_folder: "/assets/images",
+        collections: [
+          {
+            name: "noticias",
+            label: "📰 Noticias",
+            files: [
+              {
+                label: "Lista de noticias",
+                name: "noticias_lista",
+                file: "content/noticias.json",
+                fields: [
+                  {
+                    label: "Noticias",
+                    name: "items",
+                    widget: "list",
+                    summary: "{{fields.titulo}}",
+                    fields: [
+                      { label: "Título",    name: "titulo",    widget: "string" },
+                      { label: "Fecha",     name: "fecha",     widget: "string", hint: "Ej: 5 de abril, 2026" },
+                      { label: "Categoría", name: "categoria", widget: "select",
+                        options: ["Partido", "Club", "Campo", "Convocatoria", "Otro"] },
+                      { label: "Extracto",  name: "extracto",  widget: "text" },
+                      { label: "Imagen",    name: "imagen",    widget: "image", required: false,
+                        hint: "Sube una foto para esta noticia (opcional)" }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            name: "galeria",
+            label: "📸 Galería",
+            files: [
+              {
+                label: "Fotos de la galería",
+                name: "galeria_fotos",
+                file: "content/galeria.json",
+                fields: [
+                  {
+                    label: "Fotos",
+                    name: "items",
+                    widget: "list",
+                    summary: "{{fields.titulo}}",
+                    fields: [
+                      { label: "Título / Descripción", name: "titulo",    widget: "string" },
+                      { label: "Imagen",               name: "imagen",    widget: "image" },
+                      { label: "Foto destacada (ocupa más espacio)", name: "destacada", widget: "boolean", default: false }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            name: "plantilla",
+            label: "⚽ Plantilla",
+            files: [
+              {
+                label: "Jugadores",
+                name: "jugadores",
+                file: "content/plantilla.json",
+                fields: [
+                  {
+                    label: "Jugadores",
+                    name: "items",
+                    widget: "list",
+                    summary: "{{fields.nombre}} — {{fields.posicion}}",
+                    fields: [
+                      { label: "Nombre",   name: "nombre",   widget: "string" },
+                      { label: "Dorsal",   name: "dorsal",   widget: "number" },
+                      { label: "Posición", name: "posicion", widget: "select",
+                        options: ["portero", "defensa", "centrocampista", "delantero"] },
+                      { label: "Foto",     name: "foto",     widget: "image", required: false }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            name: "partidos",
+            label: "🗓 Partidos",
+            files: [
+              {
+                label: "Próximos y resultados",
+                name: "partidos_lista",
+                file: "content/partidos.json",
+                fields: [
+                  {
+                    label: "Próximos partidos",
+                    name: "proximos",
+                    widget: "list",
+                    summary: "{{fields.dia}} {{fields.mes}} — {{fields.rival}}",
+                    fields: [
+                      { label: "Día",        name: "dia",       widget: "string", hint: "Ej: 12" },
+                      { label: "Mes",        name: "mes",       widget: "string", hint: "Ej: ABR" },
+                      { label: "Rival",      name: "rival",     widget: "string" },
+                      { label: "Competición",name: "comp",      widget: "string", default: "Liga Amateur Madrid" },
+                      { label: "Hora y lugar",name: "lugar",    widget: "string", hint: "Ej: 🏟 Jesús Huertas · 11:00h" },
+                      { label: "Condición",  name: "condicion", widget: "select", options: ["Local", "Visitante"] }
+                    ]
+                  },
+                  {
+                    label: "Últimos resultados",
+                    name: "resultados",
+                    widget: "list",
+                    summary: "{{fields.local}} {{fields.goles_local}}-{{fields.goles_visitante}} {{fields.visitante}}",
+                    fields: [
+                      { label: "Equipo local",    name: "local",           widget: "string" },
+                      { label: "Goles local",     name: "goles_local",     widget: "number" },
+                      { label: "Goles visitante", name: "goles_visitante", widget: "number" },
+                      { label: "Equipo visitante",name: "visitante",       widget: "string" },
+                      { label: "Fecha",           name: "fecha",           widget: "string", hint: "Ej: 05 Abr" },
+                      { label: "Condición",       name: "condicion",       widget: "select", options: ["Local", "Visitante"] },
+                      { label: "Resultado",       name: "resultado",       widget: "select",
+                        options: ["victoria", "empate", "derrota"] }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    });
+  </script>
 </body>
 </html>

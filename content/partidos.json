@@ -1,0 +1,47 @@
+{
+  "proximos": [
+    {
+      "dia": "12", "mes": "ABR",
+      "rival": "Rival FC",
+      "comp": "Liga Amateur Madrid",
+      "lugar": "🏟 Jesús Huertas · 11:00h",
+      "condicion": "Local"
+    },
+    {
+      "dia": "19", "mes": "ABR",
+      "rival": "CD Contrario",
+      "comp": "Liga Amateur Madrid",
+      "lugar": "✈ Campo Visitante · 12:00h",
+      "condicion": "Visitante"
+    },
+    {
+      "dia": "26", "mes": "ABR",
+      "rival": "Deportivo Sur",
+      "comp": "Liga Amateur Madrid",
+      "lugar": "🏟 Jesús Huertas · 10:00h",
+      "condicion": "Local"
+    }
+  ],
+  "resultados": [
+    {
+      "local": "Fuenlabrada Falcons", "goles_local": 3,
+      "visitante": "FC Rival",        "goles_visitante": 1,
+      "fecha": "05 Abr", "condicion": "Local", "resultado": "victoria"
+    },
+    {
+      "local": "CD Contrario",        "goles_local": 1,
+      "visitante": "Fuenlabrada Falcons", "goles_visitante": 1,
+      "fecha": "29 Mar", "condicion": "Visitante", "resultado": "empate"
+    },
+    {
+      "local": "Fuenlabrada Falcons", "goles_local": 2,
+      "visitante": "Atlético Norte",  "goles_visitante": 0,
+      "fecha": "22 Mar", "condicion": "Local", "resultado": "victoria"
+    },
+    {
+      "local": "Real Fuenlabrada B",  "goles_local": 3,
+      "visitante": "Fuenlabrada Falcons", "goles_visitante": 0,
+      "fecha": "15 Mar", "condicion": "Visitante", "resultado": "derrota"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "items": [
+    {
+      "titulo": "Victoria contundente 3-1 ante FC Rival en Jesús Huertas",
+      "fecha": "5 de abril, 2026",
+      "categoria": "Partido",
+      "extracto": "Los Falcons dominaron de principio a fin con un gran rendimiento colectivo que dejó al rival sin opciones durante los 90 minutos.",
+      "imagen": ""
+    },
+    {
+      "titulo": "Nuevas incorporaciones para completar la plantilla esta temporada",
+      "fecha": "28 de marzo, 2026",
+      "categoria": "Club",
+      "extracto": "El club cierra los refuerzos de invierno con la llegada de tres nuevos jugadores que refuerzan todas las líneas del equipo.",
+      "imagen": ""
+    },
+    {
+      "titulo": "Mejoras en el campo Jesús Huertas para la segunda vuelta",
+      "fecha": "15 de marzo, 2026",
+      "categoria": "Campo",
+      "extracto": "El Ayuntamiento de Fuenlabrada ha realizado mejoras en el césped y las instalaciones de La Avanzada de cara a la segunda parte de la temporada.",
+      "imagen": ""
+    }
+  ]
+}

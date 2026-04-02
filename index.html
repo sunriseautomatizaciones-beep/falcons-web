@@ -149,6 +149,7 @@
         <button class="squad__tab" data-filter="delantero">Delanteros</button>
       </div>
 
+      <!-- Contenido cargado dinámicamente desde /content/plantilla.json -->
       <div class="squad__grid" id="squadGrid">
         <!-- Porteros -->
         <div class="player-card reveal" data-pos="portero">
@@ -282,6 +283,8 @@
           <h3 class="matches__col-title">
             <span class="dot dot--gold"></span> Próximos partidos
           </h3>
+          <!-- Contenido dinámico desde /content/partidos.json -->
+          <div id="proximosGrid">
           <div class="match-card match-card--next">
             <div class="match-card__date">
               <span class="match-card__day">12</span>
@@ -336,6 +339,8 @@
           <h3 class="matches__col-title">
             <span class="dot dot--silver"></span> Últimos resultados
           </h3>
+          <!-- Contenido dinámico desde /content/partidos.json -->
+          <div id="resultadosGrid">
           <div class="result-card">
             <div class="result-card__teams">
               <span>Fuenlabrada Falcons</span>
@@ -393,7 +398,8 @@
         <h2 class="section__title">Galería</h2>
         <p class="section__sub">Los mejores momentos de los Falcons en el campo.</p>
       </div>
-      <div class="gallery__grid">
+      <!-- Contenido dinámico desde /content/galeria.json -->
+      <div class="gallery__grid" id="galeriaGrid">
         <div class="gallery__item gallery__item--large reveal">
           <div class="gallery__placeholder">
             <span class="gallery__placeholder-icon">📸</span>
@@ -452,7 +458,8 @@
         <span class="section__tag">Actualidad</span>
         <h2 class="section__title">Últimas noticias</h2>
       </div>
-      <div class="news__grid">
+      <!-- Contenido dinámico desde /content/noticias.json -->
+      <div class="news__grid" id="noticiasGrid">
         <article class="news-card reveal">
           <div class="news-card__img">
             <div class="news-card__placeholder">

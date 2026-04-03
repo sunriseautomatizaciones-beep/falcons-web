@@ -242,6 +242,7 @@
     <button class="tab-btn" data-tab="galeria">📸 Galería</button>
     <button class="tab-btn" data-tab="plantilla">⚽ Plantilla</button>
     <button class="tab-btn" data-tab="partidos">🗓 Partidos</button>
+    <button class="tab-btn" data-tab="patrocinadores">🤝 Patrocinadores</button>
   </div>
 
   <div class="content">
@@ -287,6 +288,15 @@
       <div class="items-list" id="list-resultados"><div class="loading-row"><span class="spinner"></span> Cargando...</div></div>
     </div>
 
+    <!-- PATROCINADORES -->
+    <div class="panel" id="panel-patrocinadores">
+      <div class="panel-header">
+        <h2>🤝 Patrocinadores</h2>
+        <button class="btn btn--gold btn--sm" onclick="openModal('patrocinador')">+ Añadir patrocinador</button>
+      </div>
+      <div class="items-list" id="list-patrocinadores"><div class="loading-row"><span class="spinner"></span> Cargando...</div></div>
+    </div>
+
   </div>
 </div>
 
@@ -314,7 +324,7 @@ const BRANCH = 'main';
 
 // ── STATE ──
 let TOKEN = localStorage.getItem('falcons_token') || '';
-let data  = { noticias: [], galeria: [], plantilla: [], partidos: { proximos: [], resultados: [] } };
+let data  = { noticias: [], galeria: [], plantilla: [], partidos: { proximos: [], resultados: [] }, patrocinadores: [] };
 let fileSHAs = {};
 let modalCtx  = null; // { type, index }
 
@@ -366,16 +376,18 @@ async function saveFile(path, content) {
 
 async function loadAll() {
   try {
-    const [n, g, p, pa] = await Promise.all([
+    const [n, g, p, pa, sp] = await Promise.all([
       loadFile('content/noticias.json'),
       loadFile('content/galeria.json'),
       loadFile('content/plantilla.json'),
       loadFile('content/partidos.json'),
+      loadFile('content/patrocinadores.json'),
     ]);
-    data.noticias  = n.items || [];
-    data.galeria   = g.items || [];
-    data.plantilla = p.items || [];
-    data.partidos  = pa;
+    data.noticias       = n.items  || [];
+    data.galeria        = g.items  || [];
+    data.plantilla      = p.items  || [];
+    data.partidos       = pa;
+    data.patrocinadores = sp.items || [];
     renderAll();
   } catch(e) {
     toast('Error cargando datos: ' + e.message, 'err');
@@ -411,6 +423,11 @@ function renderAll() {
     title: `${r.local} ${r.goles_local}-${r.goles_visitante} ${r.visitante}`,
     sub: `${resLabel[r.resultado]} · ${r.fecha}`
   }), 'resultado');
+
+  renderList('patrocinadores', data.patrocinadores, s => ({
+    title: s.nombre,
+    sub: s.web || 'Sin web'
+  }), 'patrocinador');
 }
 
 function renderList(id, items, fn, type) {
@@ -477,6 +494,16 @@ const FORMS = {
     <div><label>Hora y lugar</label><input id="f_lugar" value="${esc(d.lugar||'')}" placeholder="Ej: 🏟 Jesús Huertas · 11:00h" /></div>
     <div><label>Condición</label><select id="f_condicion"><option ${d.condicion==='Local'?'selected':''}>Local</option><option ${d.condicion==='Visitante'?'selected':''}>Visitante</option></select></div>`,
 
+  patrocinador: (d={}) => `
+    <div><label>Nombre del patrocinador</label><input id="f_nombre" value="${esc(d.nombre||'')}" placeholder="Ej: Empresa Ejemplo S.L." /></div>
+    <div><label>Sitio web (opcional)</label><input id="f_web" value="${esc(d.web||'')}" placeholder="Ej: https://empresa.com" /></div>
+    <div class="img-upload"><label>Logo (opcional)</label>
+      <img class="img-preview" id="f_img_preview" src="${d.logo||''}" ${d.logo?'style="display:block"':''} />
+      <div class="img-upload-area" onclick="document.getElementById('f_img_file').click()">🖼 Haz clic para subir el logo</div>
+      <input type="file" id="f_img_file" accept="image/*" style="display:none" onchange="previewImg(this,'f_img_preview')" />
+      <input type="hidden" id="f_logo" value="${esc(d.logo||'')}" />
+    </div>`,
+
   resultado: (d={}) => `
     <div><label>Equipo local</label><input id="f_local" value="${esc(d.local||'')}" placeholder="Ej: Fuenlabrada Falcons" /></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
@@ -489,7 +516,7 @@ const FORMS = {
     <div><label>Resultado</label><select id="f_resultado"><option value="victoria" ${d.resultado==='victoria'?'selected':''}>Victoria</option><option value="empate" ${d.resultado==='empate'?'selected':''}>Empate</option><option value="derrota" ${d.resultado==='derrota'?'selected':''}>Derrota</option></select></div>`
 };
 
-const TITLES = { noticia:'Noticia', foto:'Foto', jugador:'Jugador', partido:'Partido', resultado:'Resultado' };
+const TITLES = { noticia:'Noticia', foto:'Foto', jugador:'Jugador', partido:'Partido', resultado:'Resultado', patrocinador:'Patrocinador' };
 
 function openModal(type, index = -1) {
   modalCtx = { type, index };
@@ -500,6 +527,7 @@ function openModal(type, index = -1) {
     else if (type === 'jugador') existing = data.plantilla[index];
     else if (type === 'partido') existing = data.partidos.proximos[index];
     else if (type === 'resultado') existing = data.partidos.resultados[index];
+    else if (type === 'patrocinador') existing = data.patrocinadores[index];
   }
   document.getElementById('modalTitle').textContent = (index >= 0 ? 'Editar ' : 'Nueva ') + TITLES[type];
   document.getElementById('modalForm').innerHTML = FORMS[type](existing);
@@ -528,7 +556,7 @@ async function saveModal() {
       const file = fileInput.files[0];
       const b64 = await fileToBase64(file);
       const url = await ghUploadImage(`${Date.now()}_${file.name}`, b64);
-      const hiddenId = type === 'jugador' ? 'f_foto' : 'f_imagen';
+      const hiddenId = type === 'jugador' ? 'f_foto' : type === 'patrocinador' ? 'f_logo' : 'f_imagen';
       document.getElementById(hiddenId).value = url;
     }
 
@@ -538,6 +566,7 @@ async function saveModal() {
     else if (type === 'jugador') item = { nombre: val('f_nombre'), dorsal: parseInt(val('f_dorsal'))||0, posicion: val('f_posicion'), foto: val('f_foto') };
     else if (type === 'partido') item = { dia: val('f_dia'), mes: val('f_mes'), rival: val('f_rival'), comp: val('f_comp'), lugar: val('f_lugar'), condicion: val('f_condicion') };
     else if (type === 'resultado') item = { local: val('f_local'), goles_local: parseInt(val('f_goles_local'))||0, goles_visitante: parseInt(val('f_goles_visitante'))||0, visitante: val('f_visitante'), fecha: val('f_fecha'), condicion: val('f_condicion'), resultado: val('f_resultado') };
+    else if (type === 'patrocinador') item = { nombre: val('f_nombre'), web: val('f_web'), logo: val('f_logo') };
 
     if (type === 'noticia') {
       if (index >= 0) data.noticias[index] = item; else data.noticias.unshift(item);
@@ -554,6 +583,9 @@ async function saveModal() {
     } else if (type === 'resultado') {
       if (index >= 0) data.partidos.resultados[index] = item; else data.partidos.resultados.unshift(item);
       await saveFile('content/partidos.json', data.partidos);
+    } else if (type === 'patrocinador') {
+      if (index >= 0) data.patrocinadores[index] = item; else data.patrocinadores.push(item);
+      await saveFile('content/patrocinadores.json', { items: data.patrocinadores });
     }
 
     renderAll();
@@ -575,6 +607,7 @@ async function deleteItem(type, index) {
     else if (type === 'jugador') { data.plantilla.splice(index,1); await saveFile('content/plantilla.json', { items: data.plantilla }); }
     else if (type === 'partido') { data.partidos.proximos.splice(index,1); await saveFile('content/partidos.json', data.partidos); }
     else if (type === 'resultado') { data.partidos.resultados.splice(index,1); await saveFile('content/partidos.json', data.partidos); }
+    else if (type === 'patrocinador') { data.patrocinadores.splice(index,1); await saveFile('content/patrocinadores.json', { items: data.patrocinadores }); }
     renderAll();
     toast('Elemento eliminado.', 'ok');
   } catch(e) {

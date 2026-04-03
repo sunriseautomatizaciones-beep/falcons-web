@@ -291,10 +291,31 @@ async function loadPartidos() {
   }
 }
 
+// ── PATROCINADORES ──
+async function loadPatrocinadores() {
+  const container = document.getElementById('patrocinadoresGrid');
+  if (!container) return;
+  try {
+    const res = await fetch('/content/patrocinadores.json');
+    const { items } = await res.json();
+    if (!items.length) return; // mantener placeholders si no hay datos
+    container.innerHTML = items.map(s => `
+      <div class="sponsor-card">
+        ${s.logo
+          ? `<img src="${s.logo}" alt="${s.nombre}" style="max-width:140px;max-height:70px;object-fit:contain;filter:brightness(0) invert(1);opacity:.7;" />`
+          : `<span class="sponsor-card__placeholder">${s.nombre}</span>`
+        }
+        ${s.web ? `<a href="${s.web}" target="_blank" rel="noopener" style="position:absolute;inset:0" aria-label="${s.nombre}"></a>` : ''}
+      </div>
+    `).join('');
+  } catch {}
+}
+
 // ── INICIALIZAR TODO ──
 document.addEventListener('DOMContentLoaded', () => {
   loadNoticias();
   loadGaleria();
   loadPlantilla();
   loadPartidos();
+  loadPatrocinadores();
 });

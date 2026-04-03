@@ -1,11 +1,678 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin · CDE Fuenlabrada Falcons</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:      #0A0E1A;
+      --bg2:     #111827;
+      --bg3:     #1A2236;
+      --gold:    #C9A84C;
+      --gold2:   #E2C06A;
+      --silver:  #BFC8D8;
+      --red:     #ef4444;
+      --green:   #22c55e;
+      --text:    #EEF2FF;
+      --muted:   #6B7A9A;
+      --border:  rgba(191,200,216,0.1);
+      --radius:  10px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+    a { color: var(--gold); text-decoration: none; }
+
+    /* ── LOGIN ── */
+    #loginScreen {
+      display: flex; align-items: center; justify-content: center;
+      min-height: 100vh; padding: 24px;
+    }
+    .login-box {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 16px; padding: 48px 40px; width: 100%; max-width: 420px;
+      display: flex; flex-direction: column; gap: 24px;
+    }
+    .login-logo { display: flex; align-items: center; gap: 12px; }
+    .login-logo img { height: 52px; }
+    .login-logo-text h1 { font-family: 'Barlow Condensed', sans-serif; font-size: 1.2rem; font-weight: 900; letter-spacing: 0.04em; text-transform: uppercase; }
+    .login-logo-text span { font-size: 0.75rem; color: var(--muted); }
+    .login-box h2 { font-family: 'Barlow Condensed', sans-serif; font-size: 1.5rem; font-weight: 800; text-transform: uppercase; }
+    .login-box p { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
+    .login-box ol { font-size: 0.83rem; color: var(--muted); padding-left: 18px; line-height: 2; }
+    .login-box ol a { color: var(--gold); }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group label { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+    .form-group input {
+      background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+      border-radius: 8px; padding: 12px 14px; font-family: 'Inter', sans-serif;
+      font-size: 0.9rem; color: var(--text); outline: none; width: 100%;
+      transition: border-color 0.2s;
+    }
+    .form-group input:focus { border-color: var(--gold); }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 12px 24px; border-radius: 8px; font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+      cursor: pointer; border: none; transition: all 0.2s; width: 100%; }
+    .btn--gold { background: var(--gold); color: #0A0E1A; }
+    .btn--gold:hover { background: var(--gold2); }
+    .btn--outline { background: transparent; color: var(--muted); border: 1px solid var(--border); width: auto; }
+    .btn--outline:hover { border-color: var(--gold); color: var(--gold); }
+    .btn--danger { background: rgba(239,68,68,0.1); color: var(--red); border: 1px solid rgba(239,68,68,0.2); width: auto; }
+    .btn--sm { padding: 7px 16px; font-size: 0.82rem; }
+    .error-msg { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25); border-radius: 8px; padding: 10px 14px; font-size: 0.82rem; color: var(--red); display: none; }
+
+    /* ── APP ── */
+    #app { display: none; flex-direction: column; min-height: 100vh; }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(10,14,26,0.95); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 16px;
+      padding: 12px 24px;
+    }
+    .topbar__logo { display: flex; align-items: center; gap: 10px; }
+    .topbar__logo img { height: 36px; }
+    .topbar__title { font-family: 'Barlow Condensed', sans-serif; font-size: 1rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; }
+    .topbar__title span { color: var(--gold); }
+    .topbar__right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+    .topbar__user { font-size: 0.78rem; color: var(--muted); }
+
+    /* ── NAV TABS ── */
+    .nav-tabs {
+      display: flex; gap: 4px; padding: 12px 24px;
+      border-bottom: 1px solid var(--border); flex-wrap: wrap;
+    }
+    .tab-btn {
+      padding: 8px 18px; background: transparent; border: 1px solid transparent;
+      border-radius: 8px; font-family: 'Barlow Condensed', sans-serif;
+      font-size: 0.88rem; font-weight: 700; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--muted); cursor: pointer; transition: all 0.2s;
+    }
+    .tab-btn:hover { color: var(--text); border-color: var(--border); }
+    .tab-btn.active { background: rgba(201,168,76,0.12); border-color: rgba(201,168,76,0.3); color: var(--gold); }
+
+    /* ── CONTENT ── */
+    .content { padding: 32px 24px; max-width: 900px; margin: 0 auto; flex: 1; }
+    .panel { display: none; flex-direction: column; gap: 24px; }
+    .panel.active { display: flex; }
+    .panel-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+    .panel-header h2 { font-family: 'Barlow Condensed', sans-serif; font-size: 1.6rem; font-weight: 900; text-transform: uppercase; }
+
+    /* ── CARDS LIST ── */
+    .items-list { display: flex; flex-direction: column; gap: 12px; }
+    .item-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 16px 20px;
+      display: flex; align-items: center; gap: 16px;
+    }
+    .item-card__info { flex: 1; min-width: 0; }
+    .item-card__title { font-weight: 600; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .item-card__sub { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+    .item-card__actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(4px); z-index: 200;
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px; opacity: 0; pointer-events: none; transition: opacity 0.2s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 16px; padding: 32px; width: 100%; max-width: 560px;
+      max-height: 90vh; overflow-y: auto;
+      display: flex; flex-direction: column; gap: 20px;
+      transform: translateY(16px); transition: transform 0.2s;
+    }
+    .modal-overlay.open .modal { transform: translateY(0); }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; }
+    .modal-header h3 { font-family: 'Barlow Condensed', sans-serif; font-size: 1.3rem; font-weight: 800; text-transform: uppercase; }
+    .modal-close { font-size: 1.4rem; color: var(--muted); cursor: pointer; background: none; border: none; color: var(--muted); transition: color 0.2s; line-height: 1; }
+    .modal-close:hover { color: var(--text); }
+    .modal-form { display: flex; flex-direction: column; gap: 16px; }
+    .modal-form input, .modal-form textarea, .modal-form select {
+      background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+      border-radius: 8px; padding: 10px 14px; font-family: 'Inter', sans-serif;
+      font-size: 0.88rem; color: var(--text); outline: none; width: 100%;
+      transition: border-color 0.2s;
+    }
+    .modal-form input:focus, .modal-form textarea:focus, .modal-form select:focus { border-color: var(--gold); }
+    .modal-form textarea { resize: vertical; min-height: 80px; }
+    .modal-form select option { background: var(--bg2); }
+    .modal-form label { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; display: block; }
+    .modal-actions { display: flex; gap: 10px; }
+    .modal-actions .btn { flex: 1; }
+
+    /* ── IMAGE UPLOAD ── */
+    .img-upload { display: flex; flex-direction: column; gap: 8px; }
+    .img-upload-area {
+      border: 2px dashed var(--border); border-radius: 8px; padding: 20px;
+      text-align: center; cursor: pointer; transition: border-color 0.2s;
+      font-size: 0.82rem; color: var(--muted);
+    }
+    .img-upload-area:hover { border-color: var(--gold); }
+    .img-preview { width: 100%; max-height: 160px; object-fit: cover; border-radius: 6px; display: none; }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed; bottom: 24px; right: 24px; z-index: 300;
+      padding: 12px 20px; border-radius: 10px; font-size: 0.88rem; font-weight: 600;
+      opacity: 0; transform: translateY(8px); transition: all 0.3s; pointer-events: none;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast--ok  { background: rgba(34,197,94,0.15);  color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
+    .toast--err { background: rgba(239,68,68,0.15); color: var(--red);   border: 1px solid rgba(239,68,68,0.3); }
+
+    /* ── LOADING ── */
+    .spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.2); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.6s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-row { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 0.88rem; padding: 24px 0; }
+
+    /* ── BADGE ── */
+    .badge { display: inline-flex; padding: 2px 10px; border-radius: 100px; font-size: 0.7rem; font-weight: 700; font-family: 'Barlow Condensed', sans-serif; letter-spacing: 0.06em; text-transform: uppercase; }
+    .badge--gold { background: rgba(201,168,76,0.12); color: var(--gold); border: 1px solid rgba(201,168,76,0.25); }
+
+    @media (max-width: 480px) {
+      .login-box { padding: 32px 24px; }
+      .content { padding: 20px 16px; }
+      .topbar { padding: 10px 16px; }
+    }
+  </style>
 </head>
 <body>
-  <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js" type="module"></script>
+
+<!-- ═══ LOGIN ═══ -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">
+      <img src="../assets/escudo.png" alt="Falcons" onerror="this.style.display='none'" />
+      <div class="login-logo-text">
+        <h1>Fuenlabrada Falcons</h1>
+        <span>Panel de administración</span>
+      </div>
+    </div>
+
+    <div>
+      <h2>Acceder al panel</h2>
+      <p style="margin-top:8px">Necesitas un <strong>Personal Access Token</strong> de GitHub para gestionar el contenido.</p>
+    </div>
+
+    <div>
+      <p style="margin-bottom:8px;font-size:0.82rem;color:var(--muted)">Cómo obtenerlo (solo 1 vez):</p>
+      <ol>
+        <li>Ve a <a href="https://github.com/settings/tokens/new" target="_blank">github.com/settings/tokens/new</a></li>
+        <li>Nombre: <strong>Falcons Admin</strong></li>
+        <li>Expiration: <strong>No expiration</strong></li>
+        <li>Marca el permiso: <strong>repo</strong></li>
+        <li>Haz clic en <strong>Generate token</strong> y cópialo aquí</li>
+      </ol>
+    </div>
+
+    <div class="form-group">
+      <label>GitHub Personal Access Token</label>
+      <input type="password" id="tokenInput" placeholder="ghp_..." autocomplete="off" />
+    </div>
+
+    <div class="error-msg" id="loginError">Token incorrecto o sin permisos. Asegúrate de marcar el permiso <strong>repo</strong>.</div>
+
+    <button class="btn btn--gold" id="loginBtn">Entrar al panel</button>
+  </div>
+</div>
+
+<!-- ═══ APP ═══ -->
+<div id="app">
+  <div class="topbar">
+    <div class="topbar__logo">
+      <img src="../assets/escudo.png" alt="Falcons" onerror="this.style.display='none'" />
+      <span class="topbar__title">Falcons <span>Admin</span></span>
+    </div>
+    <div class="topbar__right">
+      <span class="topbar__user" id="topbarUser"></span>
+      <button class="btn btn--outline btn--sm" id="logoutBtn">Cerrar sesión</button>
+    </div>
+  </div>
+
+  <div class="nav-tabs">
+    <button class="tab-btn active" data-tab="noticias">📰 Noticias</button>
+    <button class="tab-btn" data-tab="galeria">📸 Galería</button>
+    <button class="tab-btn" data-tab="plantilla">⚽ Plantilla</button>
+    <button class="tab-btn" data-tab="partidos">🗓 Partidos</button>
+  </div>
+
+  <div class="content">
+
+    <!-- NOTICIAS -->
+    <div class="panel active" id="panel-noticias">
+      <div class="panel-header">
+        <h2>📰 Noticias</h2>
+        <button class="btn btn--gold btn--sm" onclick="openModal('noticia')">+ Nueva noticia</button>
+      </div>
+      <div class="items-list" id="list-noticias"><div class="loading-row"><span class="spinner"></span> Cargando...</div></div>
+    </div>
+
+    <!-- GALERÍA -->
+    <div class="panel" id="panel-galeria">
+      <div class="panel-header">
+        <h2>📸 Galería</h2>
+        <button class="btn btn--gold btn--sm" onclick="openModal('foto')">+ Añadir foto</button>
+      </div>
+      <div class="items-list" id="list-galeria"><div class="loading-row"><span class="spinner"></span> Cargando...</div></div>
+    </div>
+
+    <!-- PLANTILLA -->
+    <div class="panel" id="panel-plantilla">
+      <div class="panel-header">
+        <h2>⚽ Plantilla</h2>
+        <button class="btn btn--gold btn--sm" onclick="openModal('jugador')">+ Añadir jugador</button>
+      </div>
+      <div class="items-list" id="list-plantilla"><div class="loading-row"><span class="spinner"></span> Cargando...</div></div>
+    </div>
+
+    <!-- PARTIDOS -->
+    <div class="panel" id="panel-partidos">
+      <div class="panel-header">
+        <h2>🗓 Próximos partidos</h2>
+        <button class="btn btn--gold btn--sm" onclick="openModal('partido')">+ Añadir partido</button>
+      </div>
+      <div class="items-list" id="list-partidos"><div class="loading-row"><span class="spinner"></span> Cargando...</div></div>
+      <div class="panel-header" style="margin-top:8px">
+        <h2>🏆 Resultados</h2>
+        <button class="btn btn--gold btn--sm" onclick="openModal('resultado')">+ Añadir resultado</button>
+      </div>
+      <div class="items-list" id="list-resultados"><div class="loading-row"><span class="spinner"></span> Cargando...</div></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ MODAL ═══ -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modalTitle">Editar</h3>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-form" id="modalForm"></div>
+    <div class="modal-actions">
+      <button class="btn btn--gold" id="modalSaveBtn" onclick="saveModal()">Guardar</button>
+      <button class="btn btn--outline" onclick="closeModal()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TOAST ═══ -->
+<div class="toast" id="toast"></div>
+
+<script>
+const REPO  = 'sunriseautomatizaciones-beep/falcons-web';
+const BRANCH = 'main';
+
+// ── STATE ──
+let TOKEN = localStorage.getItem('falcons_token') || '';
+let data  = { noticias: [], galeria: [], plantilla: [], partidos: { proximos: [], resultados: [] } };
+let fileSHAs = {};
+let modalCtx  = null; // { type, index }
+
+// ── GITHUB API ──
+async function ghGet(path) {
+  const r = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}?ref=${BRANCH}&t=${Date.now()}`, {
+    headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json' }
+  });
+  if (!r.ok) throw new Error(`${r.status}`);
+  return r.json();
+}
+
+async function ghPut(path, content, sha) {
+  const body = { message: `admin: actualiza ${path}`, content: btoa(unescape(encodeURIComponent(JSON.stringify(content, null, 2)))), branch: BRANCH };
+  if (sha) body.sha = sha;
+  const r = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, {
+    method: 'PUT',
+    headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  if (!r.ok) { const e = await r.json(); throw new Error(e.message); }
+  return r.json();
+}
+
+async function ghUploadImage(filename, base64data) {
+  const path = `assets/images/${filename}`;
+  let sha;
+  try { const f = await ghGet(path); sha = f.sha; } catch {}
+  const r = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, {
+    method: 'PUT',
+    headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message: `admin: sube imagen ${filename}`, content: base64data, branch: BRANCH, ...(sha ? { sha } : {}) })
+  });
+  if (!r.ok) throw new Error('Error subiendo imagen');
+  return `/assets/images/${filename}`;
+}
+
+// ── LOAD DATA ──
+async function loadFile(path) {
+  const f = await ghGet(path);
+  fileSHAs[path] = f.sha;
+  return JSON.parse(decodeURIComponent(escape(atob(f.content.replace(/\n/g,'')))));
+}
+
+async function saveFile(path, content) {
+  const res = await ghPut(path, content, fileSHAs[path]);
+  fileSHAs[path] = res.content.sha;
+}
+
+async function loadAll() {
+  try {
+    const [n, g, p, pa] = await Promise.all([
+      loadFile('content/noticias.json'),
+      loadFile('content/galeria.json'),
+      loadFile('content/plantilla.json'),
+      loadFile('content/partidos.json'),
+    ]);
+    data.noticias  = n.items || [];
+    data.galeria   = g.items || [];
+    data.plantilla = p.items || [];
+    data.partidos  = pa;
+    renderAll();
+  } catch(e) {
+    toast('Error cargando datos: ' + e.message, 'err');
+  }
+}
+
+// ── RENDER ──
+const posLabel = { portero:'Portero', defensa:'Defensa', centrocampista:'Centrocampista', delantero:'Delantero' };
+const resLabel = { victoria:'Victoria ✅', empate:'Empate 🟡', derrota:'Derrota ❌' };
+
+function renderAll() {
+  renderList('noticias', data.noticias, n => ({
+    title: n.titulo,
+    sub: `${n.categoria} · ${n.fecha}`
+  }), 'noticia');
+
+  renderList('galeria', data.galeria, g => ({
+    title: g.titulo,
+    sub: g.destacada ? 'Foto destacada' : 'Foto normal'
+  }), 'foto');
+
+  renderList('plantilla', data.plantilla, j => ({
+    title: `#${j.dorsal} ${j.nombre}`,
+    sub: posLabel[j.posicion] || j.posicion
+  }), 'jugador');
+
+  renderList('partidos', data.partidos.proximos, p => ({
+    title: `${p.dia} ${p.mes} — ${p.rival}`,
+    sub: `${p.condicion} · ${p.comp}`
+  }), 'partido');
+
+  renderList('resultados', data.partidos.resultados, r => ({
+    title: `${r.local} ${r.goles_local}-${r.goles_visitante} ${r.visitante}`,
+    sub: `${resLabel[r.resultado]} · ${r.fecha}`
+  }), 'resultado');
+}
+
+function renderList(id, items, fn, type) {
+  const el = document.getElementById(`list-${id}`);
+  if (!el) return;
+  if (!items.length) { el.innerHTML = `<p style="color:var(--muted);font-size:.85rem;padding:8px 0">No hay elementos. Añade uno con el botón de arriba.</p>`; return; }
+  el.innerHTML = items.map((item, i) => {
+    const { title, sub } = fn(item);
+    return `<div class="item-card">
+      <div class="item-card__info">
+        <div class="item-card__title">${title}</div>
+        <div class="item-card__sub">${sub}</div>
+      </div>
+      <div class="item-card__actions">
+        <button class="btn btn--outline btn--sm" onclick="openModal('${type}',${i})">Editar</button>
+        <button class="btn btn--danger btn--sm" onclick="deleteItem('${type}',${i})">Eliminar</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── MODAL ──
+const FORMS = {
+  noticia: (d={}) => `
+    <div><label>Título</label><input id="f_titulo" value="${esc(d.titulo||'')}" placeholder="Título de la noticia" /></div>
+    <div><label>Fecha</label><input id="f_fecha" value="${esc(d.fecha||'')}" placeholder="Ej: 5 de abril, 2026" /></div>
+    <div><label>Categoría</label><select id="f_categoria">${['Partido','Club','Campo','Convocatoria','Otro'].map(o=>`<option ${d.categoria===o?'selected':''}>${o}</option>`).join('')}</select></div>
+    <div><label>Extracto</label><textarea id="f_extracto" placeholder="Breve descripción...">${esc(d.extracto||'')}</textarea></div>
+    <div class="img-upload"><label>Imagen (opcional)</label>
+      <img class="img-preview" id="f_img_preview" src="${d.imagen||''}" ${d.imagen?'style="display:block"':''} />
+      <div class="img-upload-area" onclick="document.getElementById('f_img_file').click()">📷 Haz clic para subir una imagen</div>
+      <input type="file" id="f_img_file" accept="image/*" style="display:none" onchange="previewImg(this,'f_img_preview')" />
+      <input type="hidden" id="f_imagen" value="${esc(d.imagen||'')}" />
+    </div>`,
+
+  foto: (d={}) => `
+    <div><label>Título / Descripción</label><input id="f_titulo" value="${esc(d.titulo||'')}" placeholder="Descripción de la foto" /></div>
+    <div class="img-upload"><label>Imagen</label>
+      <img class="img-preview" id="f_img_preview" src="${d.imagen||''}" ${d.imagen?'style="display:block"':''} />
+      <div class="img-upload-area" onclick="document.getElementById('f_img_file').click()">📷 Haz clic para subir una imagen</div>
+      <input type="file" id="f_img_file" accept="image/*" style="display:none" onchange="previewImg(this,'f_img_preview')" />
+      <input type="hidden" id="f_imagen" value="${esc(d.imagen||'')}" />
+    </div>
+    <div style="display:flex;align-items:center;gap:10px"><input type="checkbox" id="f_destacada" ${d.destacada?'checked':''} style="width:auto" /><label for="f_destacada" style="text-transform:none;font-size:.88rem">Foto destacada (ocupa más espacio en la galería)</label></div>`,
+
+  jugador: (d={}) => `
+    <div><label>Nombre</label><input id="f_nombre" value="${esc(d.nombre||'')}" placeholder="Nombre del jugador" /></div>
+    <div><label>Dorsal</label><input type="number" id="f_dorsal" value="${d.dorsal||''}" placeholder="Ej: 10" /></div>
+    <div><label>Posición</label><select id="f_posicion">${['portero','defensa','centrocampista','delantero'].map(p=>`<option value="${p}" ${d.posicion===p?'selected':''}>${posLabel[p]}</option>`).join('')}</select></div>
+    <div class="img-upload"><label>Foto del jugador (opcional)</label>
+      <img class="img-preview" id="f_img_preview" src="${d.foto||''}" ${d.foto?'style="display:block"':''} />
+      <div class="img-upload-area" onclick="document.getElementById('f_img_file').click()">📷 Haz clic para subir una foto</div>
+      <input type="file" id="f_img_file" accept="image/*" style="display:none" onchange="previewImg(this,'f_img_preview')" />
+      <input type="hidden" id="f_foto" value="${esc(d.foto||'')}" />
+    </div>`,
+
+  partido: (d={}) => `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div><label>Día</label><input id="f_dia" value="${esc(d.dia||'')}" placeholder="Ej: 12" /></div>
+      <div><label>Mes</label><input id="f_mes" value="${esc(d.mes||'')}" placeholder="Ej: ABR" /></div>
+    </div>
+    <div><label>Rival</label><input id="f_rival" value="${esc(d.rival||'')}" placeholder="Nombre del equipo rival" /></div>
+    <div><label>Competición</label><input id="f_comp" value="${esc(d.comp||'Liga Amateur Madrid')}" /></div>
+    <div><label>Hora y lugar</label><input id="f_lugar" value="${esc(d.lugar||'')}" placeholder="Ej: 🏟 Jesús Huertas · 11:00h" /></div>
+    <div><label>Condición</label><select id="f_condicion"><option ${d.condicion==='Local'?'selected':''}>Local</option><option ${d.condicion==='Visitante'?'selected':''}>Visitante</option></select></div>`,
+
+  resultado: (d={}) => `
+    <div><label>Equipo local</label><input id="f_local" value="${esc(d.local||'')}" placeholder="Ej: Fuenlabrada Falcons" /></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div><label>Goles local</label><input type="number" id="f_goles_local" value="${d.goles_local??''}" placeholder="0" /></div>
+      <div><label>Goles visitante</label><input type="number" id="f_goles_visitante" value="${d.goles_visitante??''}" placeholder="0" /></div>
+    </div>
+    <div><label>Equipo visitante</label><input id="f_visitante" value="${esc(d.visitante||'')}" placeholder="Ej: Rival FC" /></div>
+    <div><label>Fecha</label><input id="f_fecha" value="${esc(d.fecha||'')}" placeholder="Ej: 05 Abr" /></div>
+    <div><label>Condición</label><select id="f_condicion"><option ${d.condicion==='Local'?'selected':''}>Local</option><option ${d.condicion==='Visitante'?'selected':''}>Visitante</option></select></div>
+    <div><label>Resultado</label><select id="f_resultado"><option value="victoria" ${d.resultado==='victoria'?'selected':''}>Victoria</option><option value="empate" ${d.resultado==='empate'?'selected':''}>Empate</option><option value="derrota" ${d.resultado==='derrota'?'selected':''}>Derrota</option></select></div>`
+};
+
+const TITLES = { noticia:'Noticia', foto:'Foto', jugador:'Jugador', partido:'Partido', resultado:'Resultado' };
+
+function openModal(type, index = -1) {
+  modalCtx = { type, index };
+  let existing = {};
+  if (index >= 0) {
+    if (type === 'noticia') existing = data.noticias[index];
+    else if (type === 'foto') existing = data.galeria[index];
+    else if (type === 'jugador') existing = data.plantilla[index];
+    else if (type === 'partido') existing = data.partidos.proximos[index];
+    else if (type === 'resultado') existing = data.partidos.resultados[index];
+  }
+  document.getElementById('modalTitle').textContent = (index >= 0 ? 'Editar ' : 'Nueva ') + TITLES[type];
+  document.getElementById('modalForm').innerHTML = FORMS[type](existing);
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  modalCtx = null;
+}
+
+function val(id) { const el = document.getElementById(id); return el ? el.value.trim() : ''; }
+function checked(id) { const el = document.getElementById(id); return el ? el.checked : false; }
+
+async function saveModal() {
+  const btn = document.getElementById('modalSaveBtn');
+  btn.innerHTML = '<span class="spinner"></span>';
+  btn.disabled = true;
+
+  try {
+    const { type, index } = modalCtx;
+
+    // Upload image if selected
+    const fileInput = document.getElementById('f_img_file');
+    if (fileInput && fileInput.files[0]) {
+      const file = fileInput.files[0];
+      const b64 = await fileToBase64(file);
+      const url = await ghUploadImage(`${Date.now()}_${file.name}`, b64);
+      const hiddenId = type === 'jugador' ? 'f_foto' : 'f_imagen';
+      document.getElementById(hiddenId).value = url;
+    }
+
+    let item;
+    if (type === 'noticia')    item = { titulo: val('f_titulo'), fecha: val('f_fecha'), categoria: val('f_categoria'), extracto: val('f_extracto'), imagen: val('f_imagen') };
+    else if (type === 'foto')  item = { titulo: val('f_titulo'), imagen: val('f_imagen'), destacada: checked('f_destacada') };
+    else if (type === 'jugador') item = { nombre: val('f_nombre'), dorsal: parseInt(val('f_dorsal'))||0, posicion: val('f_posicion'), foto: val('f_foto') };
+    else if (type === 'partido') item = { dia: val('f_dia'), mes: val('f_mes'), rival: val('f_rival'), comp: val('f_comp'), lugar: val('f_lugar'), condicion: val('f_condicion') };
+    else if (type === 'resultado') item = { local: val('f_local'), goles_local: parseInt(val('f_goles_local'))||0, goles_visitante: parseInt(val('f_goles_visitante'))||0, visitante: val('f_visitante'), fecha: val('f_fecha'), condicion: val('f_condicion'), resultado: val('f_resultado') };
+
+    if (type === 'noticia') {
+      if (index >= 0) data.noticias[index] = item; else data.noticias.unshift(item);
+      await saveFile('content/noticias.json', { items: data.noticias });
+    } else if (type === 'foto') {
+      if (index >= 0) data.galeria[index] = item; else data.galeria.push(item);
+      await saveFile('content/galeria.json', { items: data.galeria });
+    } else if (type === 'jugador') {
+      if (index >= 0) data.plantilla[index] = item; else data.plantilla.push(item);
+      await saveFile('content/plantilla.json', { items: data.plantilla });
+    } else if (type === 'partido') {
+      if (index >= 0) data.partidos.proximos[index] = item; else data.partidos.proximos.push(item);
+      await saveFile('content/partidos.json', data.partidos);
+    } else if (type === 'resultado') {
+      if (index >= 0) data.partidos.resultados[index] = item; else data.partidos.resultados.unshift(item);
+      await saveFile('content/partidos.json', data.partidos);
+    }
+
+    renderAll();
+    closeModal();
+    toast('✓ Guardado correctamente. La web se actualiza en ~30 segundos.', 'ok');
+  } catch(e) {
+    toast('Error: ' + e.message, 'err');
+  } finally {
+    btn.innerHTML = 'Guardar';
+    btn.disabled = false;
+  }
+}
+
+async function deleteItem(type, index) {
+  if (!confirm('¿Eliminar este elemento?')) return;
+  try {
+    if (type === 'noticia')    { data.noticias.splice(index,1); await saveFile('content/noticias.json', { items: data.noticias }); }
+    else if (type === 'foto') { data.galeria.splice(index,1); await saveFile('content/galeria.json', { items: data.galeria }); }
+    else if (type === 'jugador') { data.plantilla.splice(index,1); await saveFile('content/plantilla.json', { items: data.plantilla }); }
+    else if (type === 'partido') { data.partidos.proximos.splice(index,1); await saveFile('content/partidos.json', data.partidos); }
+    else if (type === 'resultado') { data.partidos.resultados.splice(index,1); await saveFile('content/partidos.json', data.partidos); }
+    renderAll();
+    toast('Elemento eliminado.', 'ok');
+  } catch(e) {
+    toast('Error: ' + e.message, 'err');
+  }
+}
+
+// ── UTILS ──
+function esc(s) { return String(s).replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+function toast(msg, type='ok') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = `toast toast--${type} show`;
+  setTimeout(() => el.className = 'toast', 3500);
+}
+function fileToBase64(file) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = e => res(e.target.result.split(',')[1]);
+    r.onerror = rej;
+    r.readAsDataURL(file);
+  });
+}
+function previewImg(input, previewId) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = document.getElementById(previewId);
+    img.src = e.target.result;
+    img.style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+// ── AUTH ──
+async function login() {
+  const token = document.getElementById('tokenInput').value.trim();
+  if (!token) return;
+  const btn = document.getElementById('loginBtn');
+  btn.innerHTML = '<span class="spinner"></span> Verificando...';
+  btn.disabled = true;
+  document.getElementById('loginError').style.display = 'none';
+  try {
+    const r = await fetch('https://api.github.com/user', { headers: { Authorization: `token ${token}` } });
+    if (!r.ok) throw new Error();
+    const user = await r.json();
+    TOKEN = token;
+    localStorage.setItem('falcons_token', token);
+    startApp(user.login);
+  } catch {
+    document.getElementById('loginError').style.display = 'block';
+    btn.innerHTML = 'Entrar al panel';
+    btn.disabled = false;
+  }
+}
+
+function logout() {
+  localStorage.removeItem('falcons_token');
+  TOKEN = '';
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+}
+
+async function startApp(username) {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  document.getElementById('topbarUser').textContent = username;
+  await loadAll();
+}
+
+// ── TABS ──
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(`panel-${btn.dataset.tab}`).classList.add('active');
+  });
+});
+
+// ── EVENTS ──
+document.getElementById('loginBtn').addEventListener('click', login);
+document.getElementById('tokenInput').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+document.getElementById('logoutBtn').addEventListener('click', logout);
+document.getElementById('modalOverlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
+
+// ── INIT ──
+(async () => {
+  if (TOKEN) {
+    try {
+      const r = await fetch('https://api.github.com/user', { headers: { Authorization: `token ${TOKEN}` } });
+      if (r.ok) { const u = await r.json(); startApp(u.login); return; }
+    } catch {}
+    localStorage.removeItem('falcons_token');
+    TOKEN = '';
+  }
+})();
+</script>
 </body>
 </html>

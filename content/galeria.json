@@ -1,10 +1,7 @@
 {
   "items": [
-    { "titulo": "Foto del equipo",     "imagen": "", "destacada": true  },
-    { "titulo": "Partido en casa",     "imagen": "", "destacada": false },
-    { "titulo": "Entrenamiento",       "imagen": "", "destacada": false },
-    { "titulo": "Celebración",         "imagen": "", "destacada": false },
-    { "titulo": "Acción en el campo",  "imagen": "", "destacada": false },
-    { "titulo": "Vestuario",           "imagen": "", "destacada": true  }
+    { "titulo": "CDE Fuenlabrada Falcons", "imagen": "/assets/images/foto1.jpg", "destacada": true  },
+    { "titulo": "El equipo",              "imagen": "/assets/images/foto2.jpg", "destacada": false },
+    { "titulo": "Fuenlabrada Falcons",    "imagen": "/assets/images/foto3.jpg", "destacada": false }
   ]
 }

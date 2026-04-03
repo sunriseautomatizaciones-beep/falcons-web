@@ -157,7 +157,7 @@ async function loadNoticias() {
   const container = document.getElementById('noticiasGrid');
   if (!container) return;
   try {
-    const res = await fetch('/content/noticias.json');
+    const res = await fetch('/content/noticias.json', { cache: 'no-cache' });
     const { items } = await res.json();
     container.innerHTML = items.map(n => `
       <article class="news-card reveal">
@@ -187,7 +187,7 @@ async function loadGaleria() {
   const container = document.getElementById('galeriaGrid');
   if (!container) return;
   try {
-    const res = await fetch('/content/galeria.json');
+    const res = await fetch('/content/galeria.json', { cache: 'no-cache' });
     const { items } = await res.json();
     container.innerHTML = items.map(g => `
       <div class="gallery__item${g.destacada ? ' gallery__item--large' : ''} reveal">
@@ -215,7 +215,7 @@ async function loadPlantilla() {
   const container = document.getElementById('squadGrid');
   if (!container) return;
   try {
-    const res = await fetch('/content/plantilla.json');
+    const res = await fetch('/content/plantilla.json', { cache: 'no-cache' });
     const { items } = await res.json();
     const posLabel = { portero: 'Portero', defensa: 'Defensa', centrocampista: 'Centrocampista', delantero: 'Delantero' };
     container.innerHTML = items.map(p => `
@@ -246,7 +246,7 @@ async function loadPartidos() {
   const resContainer  = document.getElementById('resultadosGrid');
   if (!proxContainer && !resContainer) return;
   try {
-    const res = await fetch('/content/partidos.json');
+    const res = await fetch('/content/partidos.json', { cache: 'no-cache' });
     const { proximos, resultados } = await res.json();
 
     if (proxContainer) {
@@ -296,7 +296,7 @@ async function loadPatrocinadores() {
   const container = document.getElementById('patrocinadoresGrid');
   if (!container) return;
   try {
-    const res = await fetch('/content/patrocinadores.json');
+    const res = await fetch('/content/patrocinadores.json', { cache: 'no-cache' });
     const { items } = await res.json();
     if (!items.length) return; // mantener placeholders si no hay datos
     container.innerHTML = items.map(s => `

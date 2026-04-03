@@ -302,7 +302,7 @@ async function loadPatrocinadores() {
     container.innerHTML = items.map(s => `
       <div class="sponsor-card">
         ${s.logo
-          ? `<img src="${s.logo}" alt="${s.nombre}" style="max-width:140px;max-height:70px;object-fit:contain;filter:brightness(0) invert(1);opacity:.7;" />`
+          ? `<img src="${s.logo}" alt="${s.nombre}" style="max-width:140px;max-height:70px;object-fit:contain;" />`
           : `<span class="sponsor-card__placeholder">${s.nombre}</span>`
         }
         ${s.web ? `<a href="${s.web}" target="_blank" rel="noopener" style="position:absolute;inset:0" aria-label="${s.nombre}"></a>` : ''}

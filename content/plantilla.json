@@ -1,15 +1,15 @@
 {
   "items": [
-    { "nombre": "Jugador 1",  "dorsal": 1,  "posicion": "portero",        "foto": "" },
-    { "nombre": "Jugador 2",  "dorsal": 2,  "posicion": "defensa",        "foto": "" },
-    { "nombre": "Jugador 3",  "dorsal": 3,  "posicion": "defensa",        "foto": "" },
-    { "nombre": "Jugador 4",  "dorsal": 4,  "posicion": "defensa",        "foto": "" },
-    { "nombre": "Jugador 5",  "dorsal": 5,  "posicion": "defensa",        "foto": "" },
-    { "nombre": "Jugador 6",  "dorsal": 6,  "posicion": "centrocampista", "foto": "" },
-    { "nombre": "Jugador 7",  "dorsal": 7,  "posicion": "centrocampista", "foto": "" },
-    { "nombre": "Jugador 8",  "dorsal": 8,  "posicion": "centrocampista", "foto": "" },
-    { "nombre": "Jugador 9",  "dorsal": 9,  "posicion": "delantero",      "foto": "" },
-    { "nombre": "Jugador 10", "dorsal": 10, "posicion": "delantero",      "foto": "" },
-    { "nombre": "Jugador 11", "dorsal": 11, "posicion": "delantero",      "foto": "" }
+    { "nombre": "Jugador 1",  "dorsal": 1,  "posicion": "portero",        "foto": "/assets/images/jugadores/jugador-1.jpg" },
+    { "nombre": "Jugador 2",  "dorsal": 2,  "posicion": "defensa",        "foto": "/assets/images/jugadores/jugador-2.jpg" },
+    { "nombre": "Jugador 3",  "dorsal": 3,  "posicion": "defensa",        "foto": "/assets/images/jugadores/jugador-3.jpg" },
+    { "nombre": "Jugador 4",  "dorsal": 4,  "posicion": "defensa",        "foto": "/assets/images/jugadores/jugador-4.jpg" },
+    { "nombre": "Jugador 5",  "dorsal": 5,  "posicion": "defensa",        "foto": "/assets/images/jugadores/jugador-5.jpg" },
+    { "nombre": "Jugador 6",  "dorsal": 6,  "posicion": "centrocampista", "foto": "/assets/images/jugadores/jugador-6.jpg" },
+    { "nombre": "Jugador 7",  "dorsal": 7,  "posicion": "centrocampista", "foto": "/assets/images/jugadores/jugador-7.jpg" },
+    { "nombre": "Jugador 8",  "dorsal": 8,  "posicion": "centrocampista", "foto": "/assets/images/jugadores/jugador-8.jpg" },
+    { "nombre": "Jugador 9",  "dorsal": 9,  "posicion": "delantero",      "foto": "/assets/images/jugadores/jugador-9.jpg" },
+    { "nombre": "Jugador 10", "dorsal": 10, "posicion": "delantero",      "foto": "/assets/images/jugadores/jugador-10.jpg" },
+    { "nombre": "Jugador 11", "dorsal": 11, "posicion": "delantero",      "foto": "/assets/images/jugadores/jugador-11.jpg" }
   ]
 }

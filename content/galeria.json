@@ -1,7 +1,10 @@
 {
   "items": [
-    { "titulo": "CDE Fuenlabrada Falcons", "imagen": "/assets/images/foto1.jpg", "destacada": true  },
-    { "titulo": "El equipo",              "imagen": "/assets/images/foto2.jpg", "destacada": false },
-    { "titulo": "Fuenlabrada Falcons",    "imagen": "/assets/images/foto3.jpg", "destacada": false }
+    { "titulo": "CDE Fuenlabrada Falcons",            "imagen": "/assets/images/foto1.jpg", "destacada": true  },
+    { "titulo": "El equipo",                          "imagen": "/assets/images/foto2.jpg", "destacada": false },
+    { "titulo": "Fuenlabrada Falcons",                "imagen": "/assets/images/foto3.jpg", "destacada": false },
+    { "titulo": "Foto de equipo — Temporada 2025/26", "imagen": "/assets/images/gal-4.jpg", "destacada": true  },
+    { "titulo": "Concentración antes del partido",    "imagen": "/assets/images/gal-5.jpg", "destacada": false },
+    { "titulo": "Acción en el campo",                 "imagen": "/assets/images/gal-6.jpg", "destacada": false }
   ]
 }

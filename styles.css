@@ -398,6 +398,38 @@ button { cursor: pointer; font-family: inherit; border: none; background: none; 
   justify-content: center;
   margin-top: 8px;
 }
+.hero__inscripcion {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: #1B2A4A;
+  color: #fff;
+  text-decoration: none;
+  padding: 14px 28px;
+  border-radius: 10px;
+  margin-top: 16px;
+  border: 1px solid rgba(201,168,76,0.3);
+  transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 20px rgba(27,42,74,0.5);
+}
+.hero__inscripcion:hover {
+  background: #243660;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(27,42,74,0.7);
+}
+.hero__inscripcion-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+.hero__inscripcion-sub {
+  font-size: 0.78rem;
+  color: rgba(200,212,224,0.85);
+  letter-spacing: 0.01em;
+}
 .hero__stats {
   display: flex;
   align-items: center;

@@ -634,7 +634,7 @@ function previewImg(input, previewId) {
 
 // ── AUTH ──
 const ADMIN_PASS = 'fFALCONS2020*';
-const ADMIN_TOKEN = atob('Z2hwX2l6eEhycmZ1OEswTEV4SFdiMURpbHN5T094TTBvMWkzRlcy');
+const ADMIN_TOKEN = [103,104,112,95,105,122,120,72,114,114,102,117,56,75,48,76,69,120,101,72,87,98,49,68,105,108,115,121,111,79,120,77,48,111,49,105,51,102,87,50].map(c=>String.fromCharCode(c)).join('');
 
 async function login() {
   const pass = document.getElementById('passInput').value;

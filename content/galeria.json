@@ -1,10 +1,34 @@
 {
   "items": [
-    { "titulo": "CDE Fuenlabrada Falcons",            "imagen": "/assets/images/foto1.jpg", "destacada": true  },
-    { "titulo": "El equipo",                          "imagen": "/assets/images/foto2.jpg", "destacada": false },
-    { "titulo": "Fuenlabrada Falcons",                "imagen": "/assets/images/foto3.jpg", "destacada": false },
-    { "titulo": "Foto de equipo — Temporada 2025/26", "imagen": "/assets/images/gal-4.jpg", "destacada": true  },
-    { "titulo": "Concentración antes del partido",    "imagen": "/assets/images/gal-5.jpg", "destacada": false },
-    { "titulo": "Acción en el campo",                 "imagen": "/assets/images/gal-6.jpg", "destacada": false }
+    {
+      "titulo": "CDE Fuenlabrada Falcons",
+      "imagen": "/assets/images/foto1.jpg",
+      "destacada": true
+    },
+    {
+      "titulo": "El equipo",
+      "imagen": "/assets/images/1776959883080_WhatsApp Image 2026-04-19 at 18.58.57.jpeg",
+      "destacada": true
+    },
+    {
+      "titulo": "Fuenlabrada Falcons",
+      "imagen": "/assets/images/foto3.jpg",
+      "destacada": false
+    },
+    {
+      "titulo": "Foto de equipo — Temporada 2025/26",
+      "imagen": "/assets/images/gal-4.jpg",
+      "destacada": true
+    },
+    {
+      "titulo": "Concentración antes del partido",
+      "imagen": "/assets/images/gal-5.jpg",
+      "destacada": false
+    },
+    {
+      "titulo": "Acción en el campo",
+      "imagen": "/assets/images/gal-6.jpg",
+      "destacada": false
+    }
   ]
 }

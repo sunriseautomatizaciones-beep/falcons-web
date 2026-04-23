@@ -24,11 +24,6 @@
       "titulo": "Concentración antes del partido",
       "imagen": "/assets/images/gal-5.jpg",
       "destacada": false
-    },
-    {
-      "titulo": "Acción en el campo",
-      "imagen": "/assets/images/gal-6.jpg",
-      "destacada": false
     }
   ]
 }

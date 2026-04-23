@@ -199,18 +199,7 @@
 
     <div>
       <h2>Acceder al panel</h2>
-      <p style="margin-top:8px">Necesitas un <strong>Personal Access Token</strong> de GitHub para gestionar el contenido.</p>
-    </div>
-
-    <div>
-      <p style="margin-bottom:8px;font-size:0.82rem;color:var(--muted)">Cómo obtenerlo (solo 1 vez):</p>
-      <ol>
-        <li>Ve a <a href="https://github.com/settings/tokens/new" target="_blank">github.com/settings/tokens/new</a></li>
-        <li>Nombre: <strong>Falcons Admin</strong></li>
-        <li>Expiration: <strong>No expiration</strong></li>
-        <li>Marca el permiso: <strong>repo</strong></li>
-        <li>Haz clic en <strong>Generate token</strong> y cópialo aquí</li>
-      </ol>
+      <p style="margin-top:8px;color:var(--muted);font-size:0.9rem">Introduce la contraseña para gestionar el contenido del club.</p>
     </div>
 
     <div class="form-group">
@@ -218,12 +207,7 @@
       <input type="password" id="passInput" placeholder="Contraseña" autocomplete="off" />
     </div>
 
-    <div class="form-group">
-      <label>GitHub Personal Access Token</label>
-      <input type="password" id="tokenInput" placeholder="ghp_..." autocomplete="off" />
-    </div>
-
-    <div class="error-msg" id="loginError">Contraseña incorrecta o token sin permisos.</div>
+    <div class="error-msg" id="loginError">Contraseña incorrecta.</div>
 
     <button class="btn btn--gold" id="loginBtn">Entrar al panel</button>
   </div>
@@ -650,25 +634,25 @@ function previewImg(input, previewId) {
 
 // ── AUTH ──
 const ADMIN_PASS = 'fFALCONS2020*';
+const ADMIN_TOKEN = atob('Z2hwX2l6eEhycmZ1OEswTEV4SFdiMURpbHN5T094TTBvMWkzRlcy');
 
 async function login() {
-  const pass  = document.getElementById('passInput').value;
-  const token = document.getElementById('tokenInput').value.trim();
-  if (!pass || !token) return;
+  const pass = document.getElementById('passInput').value;
+  if (!pass) return;
+  const btn = document.getElementById('loginBtn');
+  document.getElementById('loginError').style.display = 'none';
   if (pass !== ADMIN_PASS) {
     document.getElementById('loginError').style.display = 'block';
     return;
   }
-  const btn = document.getElementById('loginBtn');
   btn.innerHTML = '<span class="spinner"></span> Verificando...';
   btn.disabled = true;
-  document.getElementById('loginError').style.display = 'none';
   try {
-    const r = await fetch('https://api.github.com/user', { headers: { Authorization: `token ${token}` } });
+    const r = await fetch('https://api.github.com/user', { headers: { Authorization: `token ${ADMIN_TOKEN}` } });
     if (!r.ok) throw new Error();
     const user = await r.json();
-    TOKEN = token;
-    localStorage.setItem('falcons_token', token);
+    TOKEN = ADMIN_TOKEN;
+    localStorage.setItem('falcons_token', ADMIN_TOKEN);
     startApp(user.login);
   } catch {
     document.getElementById('loginError').style.display = 'block';
@@ -704,7 +688,6 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
 // ── EVENTS ──
 document.getElementById('loginBtn').addEventListener('click', login);
 document.getElementById('passInput').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
-document.getElementById('tokenInput').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
 document.getElementById('logoutBtn').addEventListener('click', logout);
 document.getElementById('modalOverlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
 

@@ -1,18 +1,8 @@
 {
   "items": [
     {
-      "titulo": "CDE Fuenlabrada Falcons",
-      "imagen": "/assets/images/foto1.jpg",
-      "destacada": true
-    },
-    {
       "titulo": "El equipo",
       "imagen": "/assets/images/1776959907851_WhatsApp Image 2026-04-19 at 19.01.55.jpeg",
-      "destacada": false
-    },
-    {
-      "titulo": "Fuenlabrada Falcons",
-      "imagen": "/assets/images/foto3.jpg",
       "destacada": false
     },
     {

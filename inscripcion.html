@@ -735,7 +735,7 @@ async function submitForm() {
     lopd: document.getElementById('lopd').checked ? 'Sí' : 'No',
     imagenes: document.getElementById('imagenes').checked ? 'Sí' : 'No',
     apto: document.getElementById('apto').checked ? 'Sí' : 'No',
-    firma_tutor: document.getElementById('signatureCanvas').toDataURL('image/png')
+    firma_tutor: sigToJpeg()
   };
 
   try {
@@ -764,6 +764,16 @@ async function submitForm() {
 }
 
 // ── SIGNATURE PAD ──
+function sigToJpeg() {
+  const tmp = document.createElement('canvas');
+  tmp.width = sigCanvas.width; tmp.height = sigCanvas.height;
+  const ctx = tmp.getContext('2d');
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, tmp.width, tmp.height);
+  ctx.drawImage(sigCanvas, 0, 0);
+  return tmp.toDataURL('image/jpeg', 0.6);
+}
+
 const sigCanvas  = document.getElementById('signatureCanvas');
 const sigCtx     = sigCanvas.getContext('2d');
 let sigDrawing   = false;

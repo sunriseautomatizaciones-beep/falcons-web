@@ -232,6 +232,7 @@
     <button class="tab-btn" data-tab="plantilla">⚽ Plantilla</button>
     <button class="tab-btn" data-tab="partidos">🗓 Partidos</button>
     <button class="tab-btn" data-tab="patrocinadores">🤝 Patrocinadores</button>
+    <button class="tab-btn" data-tab="firmas">✍️ Firmas</button>
   </div>
 
   <div class="content">
@@ -286,6 +287,15 @@
       <div class="items-list" id="list-patrocinadores"><div class="loading-row"><span class="spinner"></span> Cargando...</div></div>
     </div>
 
+    <!-- FIRMAS -->
+    <div class="panel" id="panel-firmas">
+      <div class="panel-header">
+        <h2>✍️ Firmas</h2>
+        <button class="btn btn--gold btn--sm" onclick="openModal('firma')">+ Nueva firma</button>
+      </div>
+      <div class="items-list" id="list-firmas"><div class="loading-row"><span class="spinner"></span> Cargando...</div></div>
+    </div>
+
   </div>
 </div>
 
@@ -313,7 +323,7 @@ const BRANCH = 'main';
 
 // ── STATE ──
 let TOKEN = localStorage.getItem('falcons_token') || '';
-let data  = { noticias: [], galeria: [], plantilla: [], partidos: { proximos: [], resultados: [] }, patrocinadores: [] };
+let data  = { noticias: [], galeria: [], plantilla: [], partidos: { proximos: [], resultados: [] }, patrocinadores: [], firmas: [] };
 let fileSHAs = {};
 let modalCtx  = null; // { type, index }
 
@@ -365,18 +375,20 @@ async function saveFile(path, content) {
 
 async function loadAll() {
   try {
-    const [n, g, p, pa, sp] = await Promise.all([
+    const [n, g, p, pa, sp, fi] = await Promise.all([
       loadFile('content/noticias.json'),
       loadFile('content/galeria.json'),
       loadFile('content/plantilla.json'),
       loadFile('content/partidos.json'),
       loadFile('content/patrocinadores.json'),
+      loadFile('content/firmas.json'),
     ]);
     data.noticias       = n.items  || [];
     data.galeria        = g.items  || [];
     data.plantilla      = p.items  || [];
     data.partidos       = pa;
     data.patrocinadores = sp.items || [];
+    data.firmas         = fi.items || [];
     renderAll();
   } catch(e) {
     toast('Error cargando datos: ' + e.message, 'err');
@@ -417,6 +429,11 @@ function renderAll() {
     title: s.nombre,
     sub: s.web || 'Sin web'
   }), 'patrocinador');
+
+  renderList('firmas', data.firmas, f => ({
+    title: f.nombre,
+    sub: `${posLabel[f.posicion] || f.posicion} · ${f.club_anterior || '—'}`
+  }), 'firma');
 }
 
 function renderList(id, items, fn, type) {
@@ -493,6 +510,19 @@ const FORMS = {
       <input type="hidden" id="f_logo" value="${esc(d.logo||'')}" />
     </div>`,
 
+  firma: (d={}) => `
+    <div><label>Nombre del jugador</label><input id="f_nombre" value="${esc(d.nombre||'')}" placeholder="Nombre completo" /></div>
+    <div><label>Posición</label><select id="f_posicion">${['portero','defensa','centrocampista','delantero'].map(p=>`<option value="${p}" ${d.posicion===p?'selected':''}>${posLabel[p]}</option>`).join('')}</select></div>
+    <div><label>Club anterior</label><input id="f_club_anterior" value="${esc(d.club_anterior||'')}" placeholder="Ej: CD Leganés" /></div>
+    <div><label>Fecha de presentación</label><input id="f_fecha" value="${esc(d.fecha||'')}" placeholder="Ej: 15 de mayo, 2026" /></div>
+    <div><label>Descripción</label><textarea id="f_descripcion" placeholder="Breve descripción del fichaje...">${esc(d.descripcion||'')}</textarea></div>
+    <div class="img-upload"><label>Foto del jugador (opcional)</label>
+      <img class="img-preview" id="f_img_preview" src="${d.foto||''}" ${d.foto?'style="display:block"':''} />
+      <div class="img-upload-area" onclick="document.getElementById('f_img_file').click()">📷 Haz clic para subir una foto</div>
+      <input type="file" id="f_img_file" accept="image/*" style="display:none" onchange="previewImg(this,'f_img_preview')" />
+      <input type="hidden" id="f_foto" value="${esc(d.foto||'')}" />
+    </div>`,
+
   resultado: (d={}) => `
     <div><label>Equipo local</label><input id="f_local" value="${esc(d.local||'')}" placeholder="Ej: Fuenlabrada Falcons" /></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
@@ -505,7 +535,7 @@ const FORMS = {
     <div><label>Resultado</label><select id="f_resultado"><option value="victoria" ${d.resultado==='victoria'?'selected':''}>Victoria</option><option value="empate" ${d.resultado==='empate'?'selected':''}>Empate</option><option value="derrota" ${d.resultado==='derrota'?'selected':''}>Derrota</option></select></div>`
 };
 
-const TITLES = { noticia:'Noticia', foto:'Foto', jugador:'Jugador', partido:'Partido', resultado:'Resultado', patrocinador:'Patrocinador' };
+const TITLES = { noticia:'Noticia', foto:'Foto', jugador:'Jugador', partido:'Partido', resultado:'Resultado', patrocinador:'Patrocinador', firma:'Firma' };
 
 function openModal(type, index = -1) {
   modalCtx = { type, index };
@@ -517,6 +547,7 @@ function openModal(type, index = -1) {
     else if (type === 'partido') existing = data.partidos.proximos[index];
     else if (type === 'resultado') existing = data.partidos.resultados[index];
     else if (type === 'patrocinador') existing = data.patrocinadores[index];
+    else if (type === 'firma') existing = data.firmas[index];
   }
   document.getElementById('modalTitle').textContent = (index >= 0 ? 'Editar ' : 'Nueva ') + TITLES[type];
   document.getElementById('modalForm').innerHTML = FORMS[type](existing);
@@ -545,7 +576,7 @@ async function saveModal() {
       const file = fileInput.files[0];
       const b64 = await fileToBase64(file);
       const url = await ghUploadImage(`${Date.now()}_${file.name}`, b64);
-      const hiddenId = type === 'jugador' ? 'f_foto' : type === 'patrocinador' ? 'f_logo' : 'f_imagen';
+      const hiddenId = (type === 'jugador' || type === 'firma') ? 'f_foto' : type === 'patrocinador' ? 'f_logo' : 'f_imagen';
       document.getElementById(hiddenId).value = url;
     }
 
@@ -556,6 +587,7 @@ async function saveModal() {
     else if (type === 'partido') item = { dia: val('f_dia'), mes: val('f_mes'), rival: val('f_rival'), comp: val('f_comp'), lugar: val('f_lugar'), condicion: val('f_condicion') };
     else if (type === 'resultado') item = { local: val('f_local'), goles_local: parseInt(val('f_goles_local'))||0, goles_visitante: parseInt(val('f_goles_visitante'))||0, visitante: val('f_visitante'), fecha: val('f_fecha'), condicion: val('f_condicion'), resultado: val('f_resultado') };
     else if (type === 'patrocinador') item = { nombre: val('f_nombre'), web: val('f_web'), logo: val('f_logo') };
+    else if (type === 'firma') item = { nombre: val('f_nombre'), posicion: val('f_posicion'), club_anterior: val('f_club_anterior'), fecha: val('f_fecha'), descripcion: val('f_descripcion'), foto: val('f_foto') };
 
     if (type === 'noticia') {
       if (index >= 0) data.noticias[index] = item; else data.noticias.unshift(item);
@@ -575,6 +607,9 @@ async function saveModal() {
     } else if (type === 'patrocinador') {
       if (index >= 0) data.patrocinadores[index] = item; else data.patrocinadores.push(item);
       await saveFile('content/patrocinadores.json', { items: data.patrocinadores });
+    } else if (type === 'firma') {
+      if (index >= 0) data.firmas[index] = item; else data.firmas.unshift(item);
+      await saveFile('content/firmas.json', { items: data.firmas });
     }
 
     renderAll();
@@ -597,6 +632,7 @@ async function deleteItem(type, index) {
     else if (type === 'partido') { data.partidos.proximos.splice(index,1); await saveFile('content/partidos.json', data.partidos); }
     else if (type === 'resultado') { data.partidos.resultados.splice(index,1); await saveFile('content/partidos.json', data.partidos); }
     else if (type === 'patrocinador') { data.patrocinadores.splice(index,1); await saveFile('content/patrocinadores.json', { items: data.patrocinadores }); }
+    else if (type === 'firma') { data.firmas.splice(index,1); await saveFile('content/firmas.json', { items: data.firmas }); }
     renderAll();
     toast('Elemento eliminado.', 'ok');
   } catch(e) {

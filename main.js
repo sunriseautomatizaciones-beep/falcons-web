@@ -311,6 +311,38 @@ async function loadPatrocinadores() {
   } catch {}
 }
 
+// ── FIRMAS / FICHAJES ──
+async function loadFirmas() {
+  const container = document.getElementById('fichajesGrid');
+  if (!container) return;
+  try {
+    const res = await fetch('/content/firmas.json', { cache: 'no-cache' });
+    const { items } = await res.json();
+    if (!items.length) {
+      document.getElementById('fichajes').style.display = 'none';
+      return;
+    }
+    const posLabel = { portero: 'Portero', defensa: 'Defensa', centrocampista: 'Centrocampista', delantero: 'Delantero' };
+    container.innerHTML = items.map(f => `
+      <div class="fichaje-card reveal">
+        ${f.foto
+          ? `<img class="fichaje-card__foto" src="${f.foto}" alt="${f.nombre}" loading="lazy" />`
+          : `<div class="fichaje-card__foto-placeholder">🦅</div>`
+        }
+        <div class="fichaje-card__body">
+          <div class="fichaje-card__pos">${posLabel[f.posicion] || f.posicion}</div>
+          <div class="fichaje-card__name">${f.nombre}</div>
+          ${f.club_anterior ? `<div class="fichaje-card__club">Procedente de <span>${f.club_anterior}</span></div>` : ''}
+          ${f.descripcion ? `<p class="fichaje-card__desc">${f.descripcion}</p>` : ''}
+        </div>
+      </div>
+    `).join('');
+    observeReveal();
+  } catch {
+    document.getElementById('fichajes').style.display = 'none';
+  }
+}
+
 // ── INICIALIZAR TODO ──
 document.addEventListener('DOMContentLoaded', () => {
   loadNoticias();
@@ -318,4 +350,5 @@ document.addEventListener('DOMContentLoaded', () => {
   loadPlantilla();
   loadPartidos();
   loadPatrocinadores();
+  loadFirmas();
 });

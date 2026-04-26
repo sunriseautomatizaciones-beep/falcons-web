@@ -739,23 +739,20 @@ async function submitForm() {
   };
 
   try {
-    const res = await fetch(WEBHOOK, {
+    // mode: 'no-cors' + sin Content-Type evita el preflight CORS que bloqueaba la petición.
+    // n8n recibe el body como texto plano (JSON válido).
+    await fetch(WEBHOOK, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      mode: 'no-cors',
       body: JSON.stringify(data)
     });
 
-    // Hide all steps
+    // Con no-cors no podemos leer la respuesta, asumimos éxito si el fetch no lanza.
     document.querySelectorAll('.form-step').forEach(s => s.style.display = 'none');
     document.querySelector('.progress').style.display = 'none';
-
-    if (res.ok) {
-      document.getElementById('success-name').textContent =
-        'Jugador/a: ' + data.nombre + ' ' + data.apellido1 + ' (' + data.equipo + ')';
-      document.getElementById('success-screen').style.display = 'block';
-    } else {
-      document.getElementById('error-screen').style.display = 'block';
-    }
+    document.getElementById('success-name').textContent =
+      'Jugador/a: ' + data.nombre + ' ' + data.apellido1 + ' (' + data.equipo + ')';
+    document.getElementById('success-screen').style.display = 'block';
   } catch (e) {
     document.querySelectorAll('.form-step').forEach(s => s.style.display = 'none');
     document.querySelector('.progress').style.display = 'none';

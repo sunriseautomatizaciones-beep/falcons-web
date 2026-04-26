@@ -325,6 +325,25 @@
       max-width: 760px;
       margin: 0 auto;
     }
+
+    /* ── SIGNATURE PAD ── */
+    .signature-block { margin-top: 28px; display: flex; flex-direction: column; gap: 6px; }
+    .signature-label { font-weight: 600; font-size: 14px; color: var(--navy); }
+    .signature-hint  { font-size: 12px; color: var(--muted); }
+    .signature-wrap  {
+      border: 2px solid var(--border); border-radius: var(--radius);
+      background: #fff; overflow: hidden; cursor: crosshair; touch-action: none;
+    }
+    .signature-wrap canvas { display: block; width: 100%; height: 180px; }
+    .signature-wrap.invalid { border-color: var(--red); }
+    .btn-clear-sig {
+      align-self: flex-start; background: none;
+      border: 1px solid var(--border); border-radius: 6px;
+      padding: 6px 14px; font-size: 12px; color: var(--muted);
+      cursor: pointer; font-family: inherit;
+    }
+    .btn-clear-sig:hover { border-color: var(--red); color: var(--red); }
+    .field-error { font-size: 12px; color: var(--red); }
   </style>
 </head>
 <body>
@@ -581,6 +600,16 @@
         <strong>Derechos:</strong> Puede ejercitar sus derechos de acceso, rectificación, limitación, portabilidad, oposición y cancelación escribiendo a <a href="mailto:fuenlabradafalcons@gmail.com">fuenlabradafalcons@gmail.com</a>
       </div>
 
+      <div class="signature-block">
+        <p class="signature-label">Firma del padre / madre / tutor legal <span style="color:var(--red)">*</span></p>
+        <p class="signature-hint">Firma dentro del recuadro con el dedo o el ratón</p>
+        <div class="signature-wrap" id="signatureWrap">
+          <canvas id="signatureCanvas" width="600" height="180"></canvas>
+        </div>
+        <button type="button" class="btn-clear-sig" onclick="clearSignature()">Borrar firma</button>
+        <div class="field-error" id="sigError" style="display:none">La firma es obligatoria antes de enviar.</div>
+      </div>
+
       <div class="btn-row">
         <button class="btn btn-back" onclick="goTo(2)">← Anterior</button>
         <button class="btn btn-submit" id="btn-submit" onclick="submitForm()">✅ Enviar inscripción</button>
@@ -654,6 +683,13 @@ function validateStep(step) {
 async function submitForm() {
   if (!validateStep(3)) return;
 
+  if (!sigHasData) {
+    document.getElementById('signatureWrap').classList.add('invalid');
+    document.getElementById('sigError').style.display = 'block';
+    document.querySelector('.signature-block').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
   const btn = document.getElementById('btn-submit');
   btn.disabled = true;
   btn.textContent = 'Enviando...';
@@ -698,7 +734,8 @@ async function submitForm() {
     talla: document.getElementById('talla').value.trim(),
     lopd: document.getElementById('lopd').checked ? 'Sí' : 'No',
     imagenes: document.getElementById('imagenes').checked ? 'Sí' : 'No',
-    apto: document.getElementById('apto').checked ? 'Sí' : 'No'
+    apto: document.getElementById('apto').checked ? 'Sí' : 'No',
+    firma_tutor: document.getElementById('signatureCanvas').toDataURL('image/png')
   };
 
   try {
@@ -724,6 +761,59 @@ async function submitForm() {
     document.querySelector('.progress').style.display = 'none';
     document.getElementById('error-screen').style.display = 'block';
   }
+}
+
+// ── SIGNATURE PAD ──
+const sigCanvas  = document.getElementById('signatureCanvas');
+const sigCtx     = sigCanvas.getContext('2d');
+let sigDrawing   = false;
+let sigHasData   = false;
+
+function sigPos(e) {
+  const rect = sigCanvas.getBoundingClientRect();
+  const sx = sigCanvas.width / rect.width;
+  const sy = sigCanvas.height / rect.height;
+  const src = e.touches ? e.touches[0] : e;
+  return { x: (src.clientX - rect.left) * sx, y: (src.clientY - rect.top) * sy };
+}
+
+sigCanvas.addEventListener('mousedown', e => {
+  sigDrawing = true;
+  sigCtx.beginPath();
+  const p = sigPos(e); sigCtx.moveTo(p.x, p.y);
+});
+sigCanvas.addEventListener('mousemove', e => {
+  if (!sigDrawing) return;
+  const p = sigPos(e);
+  sigCtx.lineWidth = 2; sigCtx.lineCap = 'round'; sigCtx.strokeStyle = '#1B2A4A';
+  sigCtx.lineTo(p.x, p.y); sigCtx.stroke();
+  sigHasData = true;
+  document.getElementById('signatureWrap').classList.remove('invalid');
+  document.getElementById('sigError').style.display = 'none';
+});
+sigCanvas.addEventListener('mouseup',    () => sigDrawing = false);
+sigCanvas.addEventListener('mouseleave', () => sigDrawing = false);
+
+sigCanvas.addEventListener('touchstart', e => {
+  e.preventDefault(); sigDrawing = true; sigCtx.beginPath();
+  const p = sigPos(e); sigCtx.moveTo(p.x, p.y);
+}, { passive: false });
+sigCanvas.addEventListener('touchmove', e => {
+  e.preventDefault(); if (!sigDrawing) return;
+  const p = sigPos(e);
+  sigCtx.lineWidth = 2.5; sigCtx.lineCap = 'round'; sigCtx.strokeStyle = '#1B2A4A';
+  sigCtx.lineTo(p.x, p.y); sigCtx.stroke();
+  sigHasData = true;
+  document.getElementById('signatureWrap').classList.remove('invalid');
+  document.getElementById('sigError').style.display = 'none';
+}, { passive: false });
+sigCanvas.addEventListener('touchend', () => sigDrawing = false);
+
+function clearSignature() {
+  sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height);
+  sigHasData = false;
+  document.getElementById('signatureWrap').classList.remove('invalid');
+  document.getElementById('sigError').style.display = 'none';
 }
 </script>
 </body>

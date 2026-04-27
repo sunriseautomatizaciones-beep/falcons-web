@@ -767,22 +767,18 @@ async function submitForm() {
   fd.append('firma', firmaBlob, nombre + '_' + apellido1 + '_firma.png');
 
   try {
-    const res = await fetch(WEBHOOK, {
+    await fetch(WEBHOOK, {
       method: 'POST',
+      mode: 'no-cors',   // evita CORS preflight — n8n recibe el multipart igualmente
       body: fd
     });
-
-    // Hide all steps
+    // Con no-cors la respuesta es opaca — asumimos éxito si no lanza
     document.querySelectorAll('.form-step').forEach(s => s.style.display = 'none');
     document.querySelector('.progress').style.display = 'none';
-
-    if (res.ok) {
-      document.getElementById('success-name').textContent =
-        'Jugador/a: ' + data.nombre + ' ' + data.apellido1 + ' (' + data.equipo + ')';
-      document.getElementById('success-screen').style.display = 'block';
-    } else {
-      document.getElementById('error-screen').style.display = 'block';
-    }
+    const equipo = document.getElementById('equipo')?.value || '';
+    document.getElementById('success-name').textContent =
+      'Jugador/a: ' + nombre + ' ' + apellido1 + (equipo ? ' (' + equipo + ')' : '');
+    document.getElementById('success-screen').style.display = 'block';
   } catch (e) {
     document.querySelectorAll('.form-step').forEach(s => s.style.display = 'none');
     document.querySelector('.progress').style.display = 'none';

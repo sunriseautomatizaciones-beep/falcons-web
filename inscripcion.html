@@ -213,6 +213,22 @@
       accent-color: var(--navy);
     }
 
+    /* Firma canvas */
+    .firma-section { margin-top: 28px; margin-bottom: 8px; }
+    .firma-section label { font-weight: 600; color: var(--navy); font-size: 14px; display: block; margin-bottom: 8px; }
+    .canvas-wrapper {
+      border: 2px solid var(--navy);
+      border-radius: var(--radius);
+      background: #fff;
+      position: relative;
+      touch-action: none;
+    }
+    #firmaCanvas { display: block; width: 100%; height: 140px; cursor: crosshair; border-radius: var(--radius); }
+    .canvas-actions { display: flex; justify-content: flex-end; margin-top: 6px; }
+    .btn-clear { font-size: 12px; padding: 4px 12px; background: #fff; border: 1px solid var(--border); border-radius: 4px; cursor: pointer; color: #666; }
+    .btn-clear:hover { background: var(--light); }
+    .firma-hint { font-size: 12px; color: #999; margin-top: 4px; }
+
     /* LOPD checkbox */
     .check-field {
       display: flex;
@@ -325,25 +341,6 @@
       max-width: 760px;
       margin: 0 auto;
     }
-
-    /* ── SIGNATURE PAD ── */
-    .signature-block { margin-top: 28px; display: flex; flex-direction: column; gap: 6px; }
-    .signature-label { font-weight: 600; font-size: 14px; color: var(--navy); }
-    .signature-hint  { font-size: 12px; color: var(--muted); }
-    .signature-wrap  {
-      border: 2px solid var(--border); border-radius: var(--radius);
-      background: #fff; overflow: hidden; cursor: crosshair; touch-action: none;
-    }
-    .signature-wrap canvas { display: block; width: 100%; height: 180px; }
-    .signature-wrap.invalid { border-color: var(--red); }
-    .btn-clear-sig {
-      align-self: flex-start; background: none;
-      border: 1px solid var(--border); border-radius: 6px;
-      padding: 6px 14px; font-size: 12px; color: var(--muted);
-      cursor: pointer; font-family: inherit;
-    }
-    .btn-clear-sig:hover { border-color: var(--red); color: var(--red); }
-    .field-error { font-size: 12px; color: var(--red); }
   </style>
 </head>
 <body>
@@ -571,6 +568,17 @@
         </div>
       </div>
 
+      <div class="firma-section">
+        <label>Firma del tutor/a <span style="color:var(--red)">*</span></label>
+        <div class="canvas-wrapper">
+          <canvas id="firmaCanvas" width="800" height="140"></canvas>
+        </div>
+        <div class="canvas-actions">
+          <button type="button" class="btn-clear" onclick="clearFirma()">Borrar firma</button>
+        </div>
+        <p class="firma-hint">Firma con el dedo (móvil) o con el ratón en el recuadro de arriba.</p>
+      </div>
+
       <div class="section-title" style="margin-top:28px">Protección de Datos (LOPD)</div>
       <div style="display:flex;flex-direction:column;gap:10px">
         <div class="check-field">
@@ -598,16 +606,6 @@
         <strong>Responsable:</strong> C.D.E. FUENLABRADA FALCONS — C/ Ferrocarril, 8 (28944) Fuenlabrada, Madrid.<br>
         <strong>Finalidad:</strong> Registrar su solicitud de inscripción y gestionar su petición.<br>
         <strong>Derechos:</strong> Puede ejercitar sus derechos de acceso, rectificación, limitación, portabilidad, oposición y cancelación escribiendo a <a href="mailto:fuenlabradafalcons@gmail.com">fuenlabradafalcons@gmail.com</a>
-      </div>
-
-      <div class="signature-block">
-        <p class="signature-label">Firma del padre / madre / tutor legal <span style="color:var(--red)">*</span></p>
-        <p class="signature-hint">Firma dentro del recuadro con el dedo o el ratón</p>
-        <div class="signature-wrap" id="signatureWrap">
-          <canvas id="signatureCanvas" width="600" height="180"></canvas>
-        </div>
-        <button type="button" class="btn-clear-sig" onclick="clearSignature()">Borrar firma</button>
-        <div class="field-error" id="sigError" style="display:none">La firma es obligatoria antes de enviar.</div>
       </div>
 
       <div class="btn-row">
@@ -647,6 +645,36 @@
 const WEBHOOK = 'https://sunrise-clientes-n8n.bcjwrc.easypanel.host/webhook/inscripcion-falcons';
 let currentStep = 1;
 
+// ── Firma canvas ──────────────────────────────────────────
+const firmaCanvas = document.getElementById('firmaCanvas');
+const ctx = firmaCanvas.getContext('2d');
+let drawing = false;
+let firmaSigned = false;
+
+function getPos(e) {
+  const r = firmaCanvas.getBoundingClientRect();
+  const scaleX = firmaCanvas.width / r.width;
+  const scaleY = firmaCanvas.height / r.height;
+  const src = e.touches ? e.touches[0] : e;
+  return { x: (src.clientX - r.left) * scaleX, y: (src.clientY - r.top) * scaleY };
+}
+
+ctx.strokeStyle = '#1B2A4A';
+ctx.lineWidth = 2.5;
+ctx.lineCap = 'round';
+ctx.lineJoin = 'round';
+
+firmaCanvas.addEventListener('mousedown',  e => { drawing = true; const p = getPos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); });
+firmaCanvas.addEventListener('mousemove',  e => { if (!drawing) return; const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); firmaSigned = true; });
+firmaCanvas.addEventListener('mouseup',    () => { drawing = false; });
+firmaCanvas.addEventListener('mouseleave', () => { drawing = false; });
+firmaCanvas.addEventListener('touchstart', e => { e.preventDefault(); drawing = true; const p = getPos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); }, { passive: false });
+firmaCanvas.addEventListener('touchmove',  e => { e.preventDefault(); if (!drawing) return; const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); firmaSigned = true; }, { passive: false });
+firmaCanvas.addEventListener('touchend',   () => { drawing = false; });
+
+function clearFirma() { ctx.clearRect(0, 0, firmaCanvas.width, firmaCanvas.height); firmaSigned = false; }
+// ─────────────────────────────────────────────────────────
+
 function goTo(step) {
   // Validate current step before advancing
   if (step > currentStep && !validateStep(currentStep)) return;
@@ -682,11 +710,8 @@ function validateStep(step) {
 
 async function submitForm() {
   if (!validateStep(3)) return;
-
-  if (!sigHasData) {
-    document.getElementById('signatureWrap').classList.add('invalid');
-    document.getElementById('sigError').style.display = 'block';
-    document.querySelector('.signature-block').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  if (!firmaSigned) {
+    alert('Por favor, añade la firma del tutor/a antes de enviar.');
     return;
   }
 
@@ -695,132 +720,74 @@ async function submitForm() {
   btn.textContent = 'Enviando...';
 
   const lateralidad = document.querySelector('input[name="lateralidad"]:checked')?.value || '';
+  const nombre = document.getElementById('nombre').value.trim();
+  const apellido1 = document.getElementById('apellido1').value.trim();
 
-  const data = {
-    nombre: document.getElementById('nombre').value.trim(),
-    apellido1: document.getElementById('apellido1').value.trim(),
-    apellido2: document.getElementById('apellido2').value.trim(),
-    dni: document.getElementById('dni').value.trim(),
-    fechaNacimiento: document.getElementById('fechaNacimiento').value,
-    emailAlumno: document.getElementById('emailAlumno').value.trim(),
-    domicilio: document.getElementById('domicilio').value.trim(),
-    localidad: document.getElementById('localidad').value.trim(),
-    provincia: document.getElementById('provincia').value.trim(),
-    cp: document.getElementById('cp').value.trim(),
-    telefonoAlumno: document.getElementById('telefonoAlumno').value.trim(),
-    equipo: document.getElementById('equipo').value,
-    nombreMadre: document.getElementById('nombreMadre').value.trim(),
-    apellido1Madre: document.getElementById('apellido1Madre').value.trim(),
-    apellido2Madre: document.getElementById('apellido2Madre').value.trim(),
-    dniMadre: document.getElementById('dniMadre').value.trim(),
-    fechaNacMadre: document.getElementById('fechaNacMadre').value,
-    emailMadre: document.getElementById('emailMadre').value.trim(),
-    telefonoMadre: document.getElementById('telefonoMadre').value.trim(),
-    profesionMadre: document.getElementById('profesionMadre').value.trim(),
-    nombrePadre: document.getElementById('nombrePadre').value.trim(),
-    apellido1Padre: document.getElementById('apellido1Padre').value.trim(),
-    apellido2Padre: document.getElementById('apellido2Padre').value.trim(),
-    dniPadre: document.getElementById('dniPadre').value.trim(),
-    fechaNacPadre: document.getElementById('fechaNacPadre').value,
-    emailPadre: document.getElementById('emailPadre').value.trim(),
-    telefonoPadre: document.getElementById('telefonoPadre').value.trim(),
-    profesionPadre: document.getElementById('profesionPadre').value.trim(),
-    alergias: document.getElementById('alergias').value.trim(),
-    medicacion: document.getElementById('medicacion').value.trim(),
-    miedos: document.getElementById('miedos').value.trim(),
-    clubOrigen: document.getElementById('clubOrigen').value.trim(),
-    puesto: document.getElementById('puesto').value.trim(),
-    lateralidad: lateralidad,
-    talla: document.getElementById('talla').value.trim(),
-    lopd: document.getElementById('lopd').checked ? 'Sí' : 'No',
-    imagenes: document.getElementById('imagenes').checked ? 'Sí' : 'No',
-    apto: document.getElementById('apto').checked ? 'Sí' : 'No',
-    firma_tutor: sigToJpeg()
-  };
+  const fd = new FormData();
+  fd.append('nombre', nombre);
+  fd.append('apellido1', apellido1);
+  fd.append('apellido2', document.getElementById('apellido2').value.trim());
+  fd.append('dni', document.getElementById('dni').value.trim());
+  fd.append('fechaNacimiento', document.getElementById('fechaNacimiento').value);
+  fd.append('emailAlumno', document.getElementById('emailAlumno').value.trim());
+  fd.append('domicilio', document.getElementById('domicilio').value.trim());
+  fd.append('localidad', document.getElementById('localidad').value.trim());
+  fd.append('provincia', document.getElementById('provincia').value.trim());
+  fd.append('cp', document.getElementById('cp').value.trim());
+  fd.append('telefonoAlumno', document.getElementById('telefonoAlumno').value.trim());
+  fd.append('equipo', document.getElementById('equipo').value);
+  fd.append('nombreMadre', document.getElementById('nombreMadre').value.trim());
+  fd.append('apellido1Madre', document.getElementById('apellido1Madre').value.trim());
+  fd.append('apellido2Madre', document.getElementById('apellido2Madre').value.trim());
+  fd.append('dniMadre', document.getElementById('dniMadre').value.trim());
+  fd.append('fechaNacMadre', document.getElementById('fechaNacMadre').value);
+  fd.append('emailMadre', document.getElementById('emailMadre').value.trim());
+  fd.append('telefonoMadre', document.getElementById('telefonoMadre').value.trim());
+  fd.append('profesionMadre', document.getElementById('profesionMadre').value.trim());
+  fd.append('nombrePadre', document.getElementById('nombrePadre').value.trim());
+  fd.append('apellido1Padre', document.getElementById('apellido1Padre').value.trim());
+  fd.append('apellido2Padre', document.getElementById('apellido2Padre').value.trim());
+  fd.append('dniPadre', document.getElementById('dniPadre').value.trim());
+  fd.append('fechaNacPadre', document.getElementById('fechaNacPadre').value);
+  fd.append('emailPadre', document.getElementById('emailPadre').value.trim());
+  fd.append('telefonoPadre', document.getElementById('telefonoPadre').value.trim());
+  fd.append('profesionPadre', document.getElementById('profesionPadre').value.trim());
+  fd.append('alergias', document.getElementById('alergias').value.trim());
+  fd.append('medicacion', document.getElementById('medicacion').value.trim());
+  fd.append('miedos', document.getElementById('miedos').value.trim());
+  fd.append('clubOrigen', document.getElementById('clubOrigen').value.trim());
+  fd.append('puesto', document.getElementById('puesto').value.trim());
+  fd.append('lateralidad', lateralidad);
+  fd.append('talla', document.getElementById('talla').value.trim());
+  fd.append('lopd', document.getElementById('lopd').checked ? 'Si' : 'No');
+  fd.append('imagenes', document.getElementById('imagenes').checked ? 'Si' : 'No');
+  fd.append('apto', document.getElementById('apto').checked ? 'Si' : 'No');
+
+  const firmaBlob = await new Promise(resolve => firmaCanvas.toBlob(resolve, 'image/png'));
+  fd.append('firma', firmaBlob, nombre + '_' + apellido1 + '_firma.png');
 
   try {
-    // mode: 'no-cors' + sin Content-Type evita el preflight CORS que bloqueaba la petición.
-    // n8n recibe el body como texto plano (JSON válido).
-    await fetch(WEBHOOK, {
+    const res = await fetch(WEBHOOK, {
       method: 'POST',
-      mode: 'no-cors',
-      body: JSON.stringify(data)
+      body: fd
     });
 
-    // Con no-cors no podemos leer la respuesta, asumimos éxito si el fetch no lanza.
+    // Hide all steps
     document.querySelectorAll('.form-step').forEach(s => s.style.display = 'none');
     document.querySelector('.progress').style.display = 'none';
-    document.getElementById('success-name').textContent =
-      'Jugador/a: ' + data.nombre + ' ' + data.apellido1 + ' (' + data.equipo + ')';
-    document.getElementById('success-screen').style.display = 'block';
+
+    if (res.ok) {
+      document.getElementById('success-name').textContent =
+        'Jugador/a: ' + data.nombre + ' ' + data.apellido1 + ' (' + data.equipo + ')';
+      document.getElementById('success-screen').style.display = 'block';
+    } else {
+      document.getElementById('error-screen').style.display = 'block';
+    }
   } catch (e) {
     document.querySelectorAll('.form-step').forEach(s => s.style.display = 'none');
     document.querySelector('.progress').style.display = 'none';
     document.getElementById('error-screen').style.display = 'block';
   }
-}
-
-// ── SIGNATURE PAD ──
-function sigToJpeg() {
-  const tmp = document.createElement('canvas');
-  tmp.width = sigCanvas.width; tmp.height = sigCanvas.height;
-  const ctx = tmp.getContext('2d');
-  ctx.fillStyle = '#ffffff';
-  ctx.fillRect(0, 0, tmp.width, tmp.height);
-  ctx.drawImage(sigCanvas, 0, 0);
-  return tmp.toDataURL('image/jpeg', 0.6);
-}
-
-const sigCanvas  = document.getElementById('signatureCanvas');
-const sigCtx     = sigCanvas.getContext('2d');
-let sigDrawing   = false;
-let sigHasData   = false;
-
-function sigPos(e) {
-  const rect = sigCanvas.getBoundingClientRect();
-  const sx = sigCanvas.width / rect.width;
-  const sy = sigCanvas.height / rect.height;
-  const src = e.touches ? e.touches[0] : e;
-  return { x: (src.clientX - rect.left) * sx, y: (src.clientY - rect.top) * sy };
-}
-
-sigCanvas.addEventListener('mousedown', e => {
-  sigDrawing = true;
-  sigCtx.beginPath();
-  const p = sigPos(e); sigCtx.moveTo(p.x, p.y);
-});
-sigCanvas.addEventListener('mousemove', e => {
-  if (!sigDrawing) return;
-  const p = sigPos(e);
-  sigCtx.lineWidth = 2; sigCtx.lineCap = 'round'; sigCtx.strokeStyle = '#1B2A4A';
-  sigCtx.lineTo(p.x, p.y); sigCtx.stroke();
-  sigHasData = true;
-  document.getElementById('signatureWrap').classList.remove('invalid');
-  document.getElementById('sigError').style.display = 'none';
-});
-sigCanvas.addEventListener('mouseup',    () => sigDrawing = false);
-sigCanvas.addEventListener('mouseleave', () => sigDrawing = false);
-
-sigCanvas.addEventListener('touchstart', e => {
-  e.preventDefault(); sigDrawing = true; sigCtx.beginPath();
-  const p = sigPos(e); sigCtx.moveTo(p.x, p.y);
-}, { passive: false });
-sigCanvas.addEventListener('touchmove', e => {
-  e.preventDefault(); if (!sigDrawing) return;
-  const p = sigPos(e);
-  sigCtx.lineWidth = 2.5; sigCtx.lineCap = 'round'; sigCtx.strokeStyle = '#1B2A4A';
-  sigCtx.lineTo(p.x, p.y); sigCtx.stroke();
-  sigHasData = true;
-  document.getElementById('signatureWrap').classList.remove('invalid');
-  document.getElementById('sigError').style.display = 'none';
-}, { passive: false });
-sigCanvas.addEventListener('touchend', () => sigDrawing = false);
-
-function clearSignature() {
-  sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height);
-  sigHasData = false;
-  document.getElementById('signatureWrap').classList.remove('invalid');
-  document.getElementById('sigError').style.display = 'none';
 }
 </script>
 </body>

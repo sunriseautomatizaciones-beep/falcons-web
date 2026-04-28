@@ -229,38 +229,27 @@
     .btn-clear:hover { background: var(--light); }
     .firma-hint { font-size: 12px; color: #999; margin-top: 4px; }
 
-    /* LOPD */
+    /* LOPD checkbox */
     .check-field {
-      padding: 14px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px;
       background: var(--light);
       border-radius: var(--radius);
       border: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
     }
-    .check-field .lopd-text {
+    .check-field input[type=checkbox] {
+      width: 18px;
+      height: 18px;
+      margin-top: 2px;
+      accent-color: var(--navy);
+      flex-shrink: 0;
+    }
+    .check-field label {
       font-size: 13px;
       color: var(--text);
       line-height: 1.5;
-    }
-    .lopd-options {
-      display: flex;
-      gap: 12px;
-    }
-    .lopd-option {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--navy);
-    }
-    .lopd-option input[type=radio] {
-      width: 17px;
-      height: 17px;
-      accent-color: var(--navy);
       cursor: pointer;
     }
     .lopd-info {
@@ -594,28 +583,32 @@
       </div>
 
       <div class="section-title" style="margin-top:28px">Protección de Datos (LOPD)</div>
-      <div style="display:flex;flex-direction:column;gap:10px">
-        <div class="check-field">
-          <p class="lopd-text"><strong>Acepto el tratamiento de datos personales</strong> por parte del C.D.E. Fuenlabrada Falcons con los únicos fines de inscripción del alumno/a, según lo indicado en el documento de inscripción. <span style="color:var(--red)">*</span></p>
-          <div class="lopd-options">
-            <label class="lopd-option"><input type="radio" name="lopd" value="Si" required> Sí</label>
-            <label class="lopd-option"><input type="radio" name="lopd" value="No"> No</label>
+      <div style="display:flex;flex-direction:column;gap:14px">
+
+        <div class="check-field" style="flex-direction:column;align-items:flex-start;gap:8px">
+          <p style="font-size:13px"><strong>Acepto el tratamiento de datos personales</strong> por parte del C.D.E. Fuenlabrada Falcons con los únicos fines de inscripción del alumno/a, según lo indicado en el documento de inscripción. <span style="color:var(--red)">*</span></p>
+          <div class="radio-group">
+            <label><input type="radio" name="lopd" value="Si" required> Sí, acepto</label>
+            <label><input type="radio" name="lopd" value="No"> No acepto</label>
           </div>
         </div>
-        <div class="check-field">
-          <p class="lopd-text"><strong>Autorizo el uso de imágenes</strong> del alumno/a en las actividades del club, respetando siempre la normativa en materia de protección de datos y la imagen y protección jurídica del menor. <span style="color:var(--red)">*</span></p>
-          <div class="lopd-options">
-            <label class="lopd-option"><input type="radio" name="imagenes" value="Si" required> Sí</label>
-            <label class="lopd-option"><input type="radio" name="imagenes" value="No"> No</label>
+
+        <div class="check-field" style="flex-direction:column;align-items:flex-start;gap:8px">
+          <p style="font-size:13px"><strong>Autorizo el uso de imágenes</strong> del alumno/a en las actividades del club, respetando siempre la normativa en materia de protección de datos y la imagen y protección jurídica del menor. <span style="color:var(--red)">*</span></p>
+          <div class="radio-group">
+            <label><input type="radio" name="imagenes" value="Si" required> Sí, autorizo</label>
+            <label><input type="radio" name="imagenes" value="No"> No autorizo</label>
           </div>
         </div>
-        <div class="check-field">
-          <p class="lopd-text"><strong>Declaro que el alumno/a es APTO</strong> para la realización de la actividad deportiva.</p>
-          <div class="lopd-options">
-            <label class="lopd-option"><input type="radio" name="apto" value="Si"> Sí</label>
-            <label class="lopd-option"><input type="radio" name="apto" value="No"> No</label>
+
+        <div class="check-field" style="flex-direction:column;align-items:flex-start;gap:8px">
+          <p style="font-size:13px"><strong>Declaro que el alumno/a es APTO</strong> para la realización de la actividad deportiva.</p>
+          <div class="radio-group">
+            <label><input type="radio" name="apto" value="Si"> Sí, es apto/a</label>
+            <label><input type="radio" name="apto" value="No"> No es apto/a</label>
           </div>
         </div>
+
       </div>
 
       <div class="lopd-info">
@@ -767,7 +760,6 @@ async function submitForm() {
     provincia: document.getElementById('provincia').value.trim(),
     cp: document.getElementById('cp').value.trim(),
     telefonoAlumno: document.getElementById('telefonoAlumno').value.trim(),
-
     nombreMadre: document.getElementById('nombreMadre').value.trim(),
     apellido1Madre: document.getElementById('apellido1Madre').value.trim(),
     apellido2Madre: document.getElementById('apellido2Madre').value.trim(),
@@ -791,9 +783,9 @@ async function submitForm() {
     puesto: document.getElementById('puesto').value.trim(),
     lateralidad: lateralidad,
     talla: document.getElementById('talla').value.trim(),
-    lopd: document.querySelector('input[name="lopd"]:checked')?.value || 'No respondido',
+    lopd:     document.querySelector('input[name="lopd"]:checked')?.value     || 'No respondido',
     imagenes: document.querySelector('input[name="imagenes"]:checked')?.value || 'No respondido',
-    apto: document.querySelector('input[name="apto"]:checked')?.value || 'No respondido',
+    apto:     document.querySelector('input[name="apto"]:checked')?.value     || 'No respondido',
     firmaJugador: firmas.jugador.el.toDataURL('image/png'),
     firmaMadre:   firmas.madre.el.toDataURL('image/png'),
     firmaPadre:   firmas.padre.el.toDataURL('image/png')
@@ -812,7 +804,7 @@ async function submitForm() {
 
     if (res.ok) {
       document.getElementById('success-name').textContent =
-        'Jugador/a: ' + data.nombre + ' ' + data.apellido1;
+        'Jugador/a: ' + data.nombre + ' ' + data.apellido1 + ' (' + data.equipo + ')';
       document.getElementById('success-screen').style.display = 'block';
     } else {
       document.getElementById('error-screen').style.display = 'block';

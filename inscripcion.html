@@ -213,6 +213,14 @@
       accent-color: var(--navy);
     }
 
+    /* LOPD radio pills */
+    .lopd-radios { display:flex; gap:10px; flex-wrap:wrap; }
+    .lopd-radios label { display:flex; align-items:center; padding:7px 20px; border-radius:20px; border:2px solid var(--border); font-size:13px; font-weight:600; color:var(--muted); cursor:pointer; background:#fff; transition:border-color .15s,background .15s,color .15s; }
+    .lopd-radios label:hover { border-color:var(--navy); color:var(--navy); }
+    .lopd-radios input[type=radio] { display:none; }
+    .lopd-radios label:has(input[value="Si"]:checked) { background:#e8f5e9; border-color:var(--green); color:var(--green); }
+    .lopd-radios label:has(input[value="No"]:checked) { background:#ffebee; border-color:var(--red);   color:var(--red);   }
+
     /* Firma canvas */
     .firma-section { margin-top: 28px; margin-bottom: 8px; }
     .firma-section label { font-weight: 600; color: var(--navy); font-size: 14px; display: block; margin-bottom: 8px; }
@@ -587,7 +595,7 @@
 
         <div class="check-field" style="flex-direction:column;align-items:flex-start;gap:8px">
           <p style="font-size:13px"><strong>Acepto el tratamiento de datos personales</strong> por parte del C.D.E. Fuenlabrada Falcons con los únicos fines de inscripción del alumno/a, según lo indicado en el documento de inscripción. <span style="color:var(--red)">*</span></p>
-          <div class="radio-group">
+          <div class="lopd-radios">
             <label><input type="radio" name="lopd" value="Si" required> Sí, acepto</label>
             <label><input type="radio" name="lopd" value="No"> No acepto</label>
           </div>
@@ -595,7 +603,7 @@
 
         <div class="check-field" style="flex-direction:column;align-items:flex-start;gap:8px">
           <p style="font-size:13px"><strong>Autorizo el uso de imágenes</strong> del alumno/a en las actividades del club, respetando siempre la normativa en materia de protección de datos y la imagen y protección jurídica del menor. <span style="color:var(--red)">*</span></p>
-          <div class="radio-group">
+          <div class="lopd-radios">
             <label><input type="radio" name="imagenes" value="Si" required> Sí, autorizo</label>
             <label><input type="radio" name="imagenes" value="No"> No autorizo</label>
           </div>
@@ -603,7 +611,7 @@
 
         <div class="check-field" style="flex-direction:column;align-items:flex-start;gap:8px">
           <p style="font-size:13px"><strong>Declaro que el alumno/a es APTO</strong> para la realización de la actividad deportiva.</p>
-          <div class="radio-group">
+          <div class="lopd-radios">
             <label><input type="radio" name="apto" value="Si"> Sí, es apto/a</label>
             <label><input type="radio" name="apto" value="No"> No es apto/a</label>
           </div>

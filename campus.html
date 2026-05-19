@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Campus de Verano 2025 — CDE Fuenlabrada Falcons</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:    #1B2A4A;
+      --navy2:   #2D4070;
+      --silver:  #C8D4E0;
+      --light:   #F0F4F8;
+      --white:   #FFFFFF;
+      --red:     #C0392B;
+      --green:   #27AE60;
+      --gold:    #C9A84C;
+      --text:    #1a1a2e;
+      --muted:   #6b7a99;
+      --border:  #C8D4E0;
+      --radius:  8px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--light);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 20px 16px 60px;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      background: var(--navy);
+      color: var(--white);
+      padding: 28px 24px 20px;
+      text-align: center;
+      border-radius: var(--radius) var(--radius) 0 0;
+    }
+    .header img {
+      width: 80px;
+      height: auto;
+      margin-bottom: 12px;
+      filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));
+    }
+    .header h1 {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    .header p {
+      color: var(--silver);
+      font-size: 14px;
+      margin-top: 4px;
+    }
+    .header-nav {
+      margin-top: 14px;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255,255,255,0.15);
+    }
+    .header-nav a {
+      font-size: 13px;
+      color: var(--silver);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .header-nav a:hover { color: var(--white); }
+    .header-nav a.active { color: var(--gold); font-weight: 700; }
+
+    /* ── PROGRESS BAR ── */
+    .progress {
+      background: var(--navy2);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      gap: 0;
+    }
+    .step-indicator {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      position: relative;
+    }
+    .step-indicator:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      top: 14px;
+      left: calc(50% + 14px);
+      right: calc(-50% + 14px);
+      height: 2px;
+      background: rgba(255,255,255,0.25);
+      transition: background 0.3s;
+    }
+    .step-indicator.done:not(:last-child)::after {
+      background: var(--silver);
+    }
+    .step-circle {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      border: 2px solid rgba(255,255,255,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.5);
+      transition: all 0.3s;
+    }
+    .step-indicator.active .step-circle {
+      background: var(--white);
+      border-color: var(--white);
+      color: var(--navy);
+    }
+    .step-indicator.done .step-circle {
+      background: var(--silver);
+      border-color: var(--silver);
+      color: var(--navy);
+    }
+    .step-label {
+      font-size: 11px;
+      color: rgba(255,255,255,0.5);
+      font-weight: 500;
+      text-align: center;
+      transition: color 0.3s;
+    }
+    .step-indicator.active .step-label,
+    .step-indicator.done .step-label {
+      color: var(--silver);
+    }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--white);
+      border-radius: 0 0 var(--radius) var(--radius);
+      padding: 28px 28px 32px;
+      box-shadow: 0 4px 20px rgba(27,42,74,0.1);
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    /* ── FORM SECTIONS ── */
+    .form-step { display: none; }
+    .form-step.active { display: block; }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--navy);
+      padding: 10px 14px;
+      background: var(--light);
+      border-left: 4px solid var(--navy);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      margin: 24px 0 16px;
+    }
+    .section-title:first-child { margin-top: 0; }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .full { grid-column: 1 / -1; }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .field label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--navy);
+    }
+    .field label .req { color: var(--red); margin-left: 2px; }
+    .field label .opt {
+      font-size: 11px;
+      font-weight: 400;
+      color: var(--muted);
+      margin-left: 4px;
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      padding: 10px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 6px;
+      font-size: 14px;
+      color: var(--text);
+      background: var(--white);
+      transition: border-color 0.2s, box-shadow 0.2s;
+      width: 100%;
+    }
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      outline: none;
+      border-color: var(--navy);
+      box-shadow: 0 0 0 3px rgba(27,42,74,0.1);
+    }
+    .field input::placeholder,
+    .field textarea::placeholder { color: #aab; }
+    .field textarea { resize: vertical; min-height: 72px; }
+
+    /* ── TALLAS ── */
+    .tallas-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .talla-pill {
+      position: relative;
+      padding: 7px 18px;
+      border: 2px solid var(--border);
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      background: var(--white);
+      transition: border-color .15s, background .15s, color .15s;
+      user-select: none;
+    }
+    .talla-pill input[type=radio] { display: none; }
+    .talla-pill.selected {
+      border-color: var(--navy);
+      background: var(--navy);
+      color: var(--white);
+    }
+
+    /* ── SEMANAS ── */
+    .semanas-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .semana-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px 14px;
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: border-color .15s, background .15s;
+      user-select: none;
+    }
+    .semana-item.checked {
+      border-color: var(--navy);
+      background: #eef1f8;
+    }
+    .semana-item input[type=checkbox] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--navy);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .semana-item .semana-info { display: flex; flex-direction: column; gap: 2px; }
+    .semana-item .semana-nombre { font-size: 13px; font-weight: 700; color: var(--navy); }
+    .semana-item .semana-fechas { font-size: 12px; color: var(--muted); }
+    .semana-item .semana-precio { font-size: 12px; font-weight: 700; color: var(--green); }
+
+    /* ── TOTAL DINÁMICO ── */
+    .total-box {
+      background: var(--navy);
+      color: var(--white);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      margin-top: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 15px;
+      font-weight: 600;
+    }
+    .total-box .total-importe {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--gold);
+    }
+    .total-box .total-cero { color: rgba(255,255,255,0.5); font-weight: 400; font-size: 13px; }
+
+    /* ── FIRMA CANVAS ── */
+    .firma-section { margin-top: 28px; margin-bottom: 8px; }
+    .firma-section > label {
+      font-weight: 600;
+      color: var(--navy);
+      font-size: 14px;
+      display: block;
+      margin-bottom: 8px;
+    }
+    .canvas-wrapper {
+      border: 2px solid var(--navy);
+      border-radius: var(--radius);
+      background: #fff;
+      position: relative;
+      touch-action: none;
+    }
+    .canvas-wrapper canvas {
+      display: block;
+      width: 100%;
+      height: 140px;
+      cursor: crosshair;
+      border-radius: var(--radius);
+    }
+    .canvas-actions { display: flex; justify-content: flex-end; margin-top: 6px; }
+    .btn-clear {
+      font-size: 12px;
+      padding: 4px 12px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      cursor: pointer;
+      color: #666;
+    }
+    .btn-clear:hover { background: var(--light); }
+    .firma-hint { font-size: 12px; color: #999; margin-top: 4px; }
+
+    /* ── LOPD / CONSENTIMIENTO ── */
+    .check-field {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px;
+      background: var(--light);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+    }
+    .check-field input[type=checkbox] {
+      width: 18px;
+      height: 18px;
+      margin-top: 3px;
+      accent-color: var(--navy);
+      flex-shrink: 0;
+    }
+    .check-field label {
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.5;
+      cursor: pointer;
+    }
+    .lopd-info {
+      background: #f8f9fa;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.6;
+      margin-top: 8px;
+    }
+    .lopd-info strong { color: var(--text); }
+
+    /* ── BOTONES ── */
+    .btn-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 32px;
+      gap: 12px;
+    }
+    .btn {
+      padding: 12px 28px;
+      border-radius: 6px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background: var(--navy);
+      color: var(--white);
+      flex: 1;
+      max-width: 260px;
+    }
+    .btn-primary:hover { background: var(--navy2); }
+    .btn-back {
+      background: transparent;
+      color: var(--navy);
+      border: 2px solid var(--border);
+      padding: 10px 22px;
+    }
+    .btn-back:hover { background: var(--light); }
+    .btn-submit {
+      background: var(--green);
+      color: var(--white);
+      flex: 1;
+      max-width: 280px;
+    }
+    .btn-submit:hover { background: #229954; }
+    .btn-submit:disabled {
+      background: #aaa;
+      cursor: not-allowed;
+    }
+
+    /* ── SUCCESS / ERROR ── */
+    #success-screen, #error-screen {
+      display: none;
+      text-align: center;
+      padding: 40px 20px;
+    }
+    .icon-big { font-size: 56px; margin-bottom: 16px; }
+    #success-screen h2 { color: var(--green); font-size: 22px; margin-bottom: 8px; }
+    #error-screen h2 { color: var(--red); font-size: 22px; margin-bottom: 8px; }
+    #success-screen p, #error-screen p { color: var(--muted); font-size: 14px; line-height: 1.6; }
+    .resumen-box {
+      background: var(--light);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      margin: 16px auto 0;
+      max-width: 400px;
+      text-align: left;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+    .resumen-box strong { color: var(--navy); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 540px) {
+      .form-grid { grid-template-columns: 1fr; }
+      .semanas-grid { grid-template-columns: 1fr; }
+      .btn-row { flex-direction: column; }
+      .btn-primary, .btn-submit { max-width: 100%; }
+      .card { padding: 20px 16px 28px; }
+    }
+
+    .wrapper {
+      max-width: 760px;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body>
+<div class="wrapper">
+
+  <div class="header">
+    <img src="assets/escudo.png" alt="CDE Fuenlabrada Falcons" />
+    <h1>🏕️ Campus de Verano 2025</h1>
+    <p>CDE Fuenlabrada Falcons — Inscripción online</p>
+    <nav class="header-nav">
+      <a href="index.html">← Inicio</a>
+      <a href="inscripcion.html">Inscripción al equipo</a>
+      <a href="campus.html" class="active">Campus de Verano</a>
+    </nav>
+  </div>
+
+  <!-- ═══════ PROGRESS BAR ═══════ -->
+  <div class="progress">
+    <div class="step-indicator active" id="ind-1">
+      <div class="step-circle">1</div>
+      <span class="step-label">Alumno</span>
+    </div>
+    <div class="step-indicator" id="ind-2">
+      <div class="step-circle">2</div>
+      <span class="step-label">Familia</span>
+    </div>
+    <div class="step-indicator" id="ind-3">
+      <div class="step-circle">3</div>
+      <span class="step-label">Campus</span>
+    </div>
+    <div class="step-indicator" id="ind-4">
+      <div class="step-circle">4</div>
+      <span class="step-label">Firmas</span>
+    </div>
+  </div>
+
+  <div class="card">
+
+    <!-- ═══════ PASO 1: DATOS DEL ALUMNO ═══════ -->
+    <div class="form-step active" id="step-1">
+
+      <div class="section-title">Datos del alumno/a</div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Nombre <span class="req">*</span></label>
+          <input type="text" id="nombre" placeholder="NOMBRE" required>
+        </div>
+        <div class="field">
+          <label>Primer apellido <span class="req">*</span></label>
+          <input type="text" id="apellido1" placeholder="PRIMER APELLIDO" required>
+        </div>
+        <div class="field">
+          <label>Segundo apellido</label>
+          <input type="text" id="apellido2" placeholder="SEGUNDO APELLIDO">
+        </div>
+        <div class="field">
+          <label>DNI / NIE</label>
+          <input type="text" id="dni" placeholder="12345678A">
+        </div>
+        <div class="field">
+          <label>Fecha de nacimiento <span class="req">*</span></label>
+          <input type="date" id="fechaNacimiento" required>
+        </div>
+        <div class="field">
+          <label>Email del alumno/a <span class="req">*</span></label>
+          <input type="email" id="emailAlumno" placeholder="correo@ejemplo.com" required>
+        </div>
+        <div class="field full">
+          <label>Dirección</label>
+          <input type="text" id="direccion" placeholder="Calle, número, piso...">
+        </div>
+        <div class="field">
+          <label>Localidad</label>
+          <input type="text" id="localidad" placeholder="Fuenlabrada">
+        </div>
+        <div class="field">
+          <label>Provincia</label>
+          <input type="text" id="provincia" placeholder="Madrid">
+        </div>
+        <div class="field">
+          <label>Código postal</label>
+          <input type="text" id="cp" placeholder="28944" maxlength="5">
+        </div>
+        <div class="field">
+          <label>Teléfono <span class="req">*</span></label>
+          <input type="tel" id="telefono" placeholder="600 000 000" required>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <div></div>
+        <button class="btn btn-primary" onclick="goTo(2)">Siguiente →</button>
+      </div>
+    </div>
+
+    <!-- ═══════ PASO 2: DATOS FAMILIARES ═══════ -->
+    <div class="form-step" id="step-2">
+
+      <div class="section-title">Datos de la Madre</div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Nombre <span class="req">*</span></label>
+          <input type="text" id="nombreMadre" placeholder="NOMBRE" required>
+        </div>
+        <div class="field">
+          <label>Apellidos <span class="req">*</span></label>
+          <input type="text" id="apellidosMadre" placeholder="APELLIDOS" required>
+        </div>
+        <div class="field">
+          <label>DNI / NIE</label>
+          <input type="text" id="dniMadre" placeholder="12345678A">
+        </div>
+        <div class="field">
+          <label>Teléfono <span class="req">*</span></label>
+          <input type="tel" id="telefonoMadre" placeholder="600 000 000" required>
+        </div>
+        <div class="field">
+          <label>Email</label>
+          <input type="email" id="emailMadre" placeholder="correo@ejemplo.com">
+        </div>
+      </div>
+
+      <div class="section-title" style="margin-top:28px">Datos del Padre</div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Nombre <span class="req">*</span></label>
+          <input type="text" id="nombrePadre" placeholder="NOMBRE" required>
+        </div>
+        <div class="field">
+          <label>Apellidos <span class="req">*</span></label>
+          <input type="text" id="apellidosPadre" placeholder="APELLIDOS" required>
+        </div>
+        <div class="field">
+          <label>DNI / NIE</label>
+          <input type="text" id="dniPadre" placeholder="12345678A">
+        </div>
+        <div class="field">
+          <label>Teléfono <span class="req">*</span></label>
+          <input type="tel" id="telefonoPadre" placeholder="600 000 000" required>
+        </div>
+        <div class="field">
+          <label>Email</label>
+          <input type="email" id="emailPadre" placeholder="correo@ejemplo.com">
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-back" onclick="goTo(1)">← Anterior</button>
+        <button class="btn btn-primary" onclick="goTo(3)">Siguiente →</button>
+      </div>
+    </div>
+
+    <!-- ═══════ PASO 3: INFORMACIÓN DEL CAMPUS ═══════ -->
+    <div class="form-step" id="step-3">
+
+      <div class="section-title">Información médica y personal</div>
+      <div class="form-grid">
+        <div class="field full">
+          <label>Alergias conocidas</label>
+          <textarea id="alergias" placeholder="Escribe en mayúsculas o pon NINGUNA"></textarea>
+        </div>
+        <div class="field full">
+          <label>Medicación habitual</label>
+          <textarea id="medicacion" placeholder="Escribe en mayúsculas o pon NINGUNA"></textarea>
+        </div>
+        <div class="field full">
+          <label>Miedos / Fobias</label>
+          <textarea id="miedos" placeholder="Escribe en mayúsculas o pon NINGUNA"></textarea>
+        </div>
+      </div>
+
+      <div class="section-title" style="margin-top:28px">Talla de ropa habitual</div>
+      <div class="tallas-grid" id="tallasGrid">
+        <label class="talla-pill"><input type="radio" name="talla" value="4-6"> 4-6</label>
+        <label class="talla-pill"><input type="radio" name="talla" value="6-8"> 6-8</label>
+        <label class="talla-pill"><input type="radio" name="talla" value="8-10"> 8-10</label>
+        <label class="talla-pill"><input type="radio" name="talla" value="S"> S</label>
+        <label class="talla-pill"><input type="radio" name="talla" value="M"> M</label>
+        <label class="talla-pill"><input type="radio" name="talla" value="L"> L</label>
+        <label class="talla-pill"><input type="radio" name="talla" value="XL"> XL</label>
+        <label class="talla-pill"><input type="radio" name="talla" value="2XL"> 2XL</label>
+      </div>
+
+      <div class="section-title" style="margin-top:28px">Semanas de participación <span style="font-size:13px;font-weight:400;color:var(--muted)">(50 € / semana)</span></div>
+      <div class="semanas-grid">
+        <label class="semana-item" id="sem-1">
+          <input type="checkbox" class="semana-check" value="1" data-nombre="Semana 1">
+          <div class="semana-info">
+            <span class="semana-nombre">Semana 1</span>
+            <span class="semana-fechas">23 – 27 junio</span>
+            <span class="semana-precio">50 €</span>
+          </div>
+        </label>
+        <label class="semana-item" id="sem-2">
+          <input type="checkbox" class="semana-check" value="2" data-nombre="Semana 2">
+          <div class="semana-info">
+            <span class="semana-nombre">Semana 2</span>
+            <span class="semana-fechas">30 junio – 4 julio</span>
+            <span class="semana-precio">50 €</span>
+          </div>
+        </label>
+        <label class="semana-item" id="sem-3">
+          <input type="checkbox" class="semana-check" value="3" data-nombre="Semana 3">
+          <div class="semana-info">
+            <span class="semana-nombre">Semana 3</span>
+            <span class="semana-fechas">7 – 11 julio</span>
+            <span class="semana-precio">50 €</span>
+          </div>
+        </label>
+        <label class="semana-item" id="sem-4">
+          <input type="checkbox" class="semana-check" value="4" data-nombre="Semana 4">
+          <div class="semana-info">
+            <span class="semana-nombre">Semana 4</span>
+            <span class="semana-fechas">14 – 18 julio</span>
+            <span class="semana-precio">50 €</span>
+          </div>
+        </label>
+        <label class="semana-item" id="sem-5">
+          <input type="checkbox" class="semana-check" value="5" data-nombre="Semana 5">
+          <div class="semana-info">
+            <span class="semana-nombre">Semana 5</span>
+            <span class="semana-fechas">21 – 25 julio</span>
+            <span class="semana-precio">50 €</span>
+          </div>
+        </label>
+      </div>
+
+      <div class="total-box" id="totalBox">
+        <div>
+          <div id="totalLabel" class="total-cero">Selecciona al menos una semana</div>
+        </div>
+        <div class="total-importe" id="totalImporte">0 €</div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-back" onclick="goTo(2)">← Anterior</button>
+        <button class="btn btn-primary" onclick="goTo(4)">Siguiente →</button>
+      </div>
+    </div>
+
+    <!-- ═══════ PASO 4: FIRMAS Y CONSENTIMIENTO ═══════ -->
+    <div class="form-step" id="step-4">
+
+      <div class="section-title">Condiciones del Campus y Protección de Datos</div>
+      <div class="lopd-info" style="font-size:13px;color:var(--text);line-height:1.7">
+        <p>El <strong>Campus de Verano 2025 del CDE Fuenlabrada Falcons</strong> se desarrollará en el Campo Jesús Huertas (La Avanzada), Fuenlabrada, Madrid. Al inscribirse, los tutores legales autorizan la participación del alumno/a en todas las actividades deportivas y recreativas programadas.</p>
+        <p style="margin-top:10px">Los datos personales proporcionados serán tratados por el <strong>C.D.E. Fuenlabrada Falcons</strong> con la única finalidad de gestionar la inscripción al campus, según la normativa vigente de protección de datos (RGPD/LOPD). El pago de <strong>50 € por semana</strong> deberá realizarse antes del inicio de cada semana mediante transferencia bancaria.</p>
+        <p style="margin-top:10px"><strong>IBAN:</strong> ES13 0081 1387 8000 0132 3533 — Concepto: CAMPUS + nombre del alumno/a.</p>
+      </div>
+
+      <div class="check-field" style="margin-top:16px">
+        <input type="checkbox" id="aceptaCondiciones" required>
+        <label for="aceptaCondiciones">He leído y acepto las condiciones del campus y el tratamiento de mis datos personales según lo indicado. <span style="color:var(--red)">*</span></label>
+      </div>
+
+      <div class="firma-section" style="margin-top:28px">
+        <label>Firma de la madre / tutora <span style="color:var(--red)">*</span></label>
+        <div class="canvas-wrapper">
+          <canvas id="firmaMadreCanvas" width="800" height="140"></canvas>
+        </div>
+        <div class="canvas-actions">
+          <button type="button" class="btn-clear" onclick="clearFirma('madre')">Borrar firma</button>
+        </div>
+        <p class="firma-hint">Firma con el dedo (móvil) o con el ratón.</p>
+      </div>
+
+      <div class="firma-section">
+        <label>Firma del padre / tutor <span style="font-size:11px;color:#888">(opcional si solo hay un tutor)</span></label>
+        <div class="canvas-wrapper">
+          <canvas id="firmaPadreCanvas" width="800" height="140"></canvas>
+        </div>
+        <div class="canvas-actions">
+          <button type="button" class="btn-clear" onclick="clearFirma('padre')">Borrar firma</button>
+        </div>
+        <p class="firma-hint">Firma con el dedo (móvil) o con el ratón.</p>
+      </div>
+
+      <div class="firma-section">
+        <label>Firma del alumno/a <span style="color:var(--red)">*</span></label>
+        <div class="canvas-wrapper">
+          <canvas id="firmaAlumnoCanvas" width="800" height="140"></canvas>
+        </div>
+        <div class="canvas-actions">
+          <button type="button" class="btn-clear" onclick="clearFirma('alumno')">Borrar firma</button>
+        </div>
+        <p class="firma-hint">Firma con el dedo (móvil) o con el ratón.</p>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-back" onclick="goTo(3)">← Anterior</button>
+        <button class="btn btn-submit" id="btn-submit" onclick="submitForm()">✅ Enviar inscripción</button>
+      </div>
+    </div>
+
+    <!-- ═══════ PANTALLA ÉXITO ═══════ -->
+    <div id="success-screen">
+      <div class="icon-big">🏕️</div>
+      <h2>¡Inscripción enviada correctamente!</h2>
+      <p>Nos pondremos en contacto contigo pronto para confirmar la plaza.</p>
+      <div class="resumen-box" id="resumenBox"></div>
+      <p style="margin-top:16px;font-size:13px">¿Dudas? Escríbenos a <a href="mailto:fuenlabradafalcons@gmail.com">fuenlabradafalcons@gmail.com</a></p>
+    </div>
+
+    <!-- ═══════ PANTALLA ERROR ═══════ -->
+    <div id="error-screen">
+      <div class="icon-big">⚠️</div>
+      <h2>Error al enviar</h2>
+      <p>Hubo un problema al enviar la inscripción. Inténtalo de nuevo o contáctanos en <a href="mailto:fuenlabradafalcons@gmail.com">fuenlabradafalcons@gmail.com</a></p>
+      <button class="btn btn-back" style="margin-top:20px" onclick="location.reload()">Reintentar</button>
+    </div>
+
+  </div><!-- .card -->
+</div><!-- .wrapper -->
+
+<script>
+const WEBHOOK_URL = 'PENDIENTE_CONFIGURAR';
+const PRECIO_SEMANA = 50;
+let currentStep = 1;
+
+// ── Firmas ────────────────────────────────────────────────
+const firmas = {
+  madre:  { el: document.getElementById('firmaMadreCanvas'),  signed: false },
+  padre:  { el: document.getElementById('firmaPadreCanvas'),  signed: false },
+  alumno: { el: document.getElementById('firmaAlumnoCanvas'), signed: false }
+};
+
+function setupCanvas(key) {
+  const canvas = firmas[key].el;
+  const ctx = canvas.getContext('2d');
+  ctx.strokeStyle = '#1B2A4A';
+  ctx.lineWidth = 2.5;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  let drawing = false;
+
+  function getPos(e) {
+    const r = canvas.getBoundingClientRect();
+    const src = e.touches ? e.touches[0] : e;
+    return {
+      x: (src.clientX - r.left) * canvas.width  / r.width,
+      y: (src.clientY - r.top)  * canvas.height / r.height
+    };
+  }
+
+  canvas.addEventListener('mousedown',  e => { drawing = true; const p = getPos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); });
+  canvas.addEventListener('mousemove',  e => { if (!drawing) return; const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); firmas[key].signed = true; });
+  canvas.addEventListener('mouseup',    () => { drawing = false; });
+  canvas.addEventListener('mouseleave', () => { drawing = false; });
+  canvas.addEventListener('touchstart', e => { e.preventDefault(); drawing = true; const p = getPos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); }, { passive: false });
+  canvas.addEventListener('touchmove',  e => { e.preventDefault(); if (!drawing) return; const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); firmas[key].signed = true; }, { passive: false });
+  canvas.addEventListener('touchend',   () => { drawing = false; });
+}
+
+['madre', 'padre', 'alumno'].forEach(setupCanvas);
+
+function clearFirma(key) {
+  const c = firmas[key].el;
+  c.getContext('2d').clearRect(0, 0, c.width, c.height);
+  firmas[key].signed = false;
+}
+// ──────────────────────────────────────────────────────────
+
+// ── Tallas — pill toggle ──────────────────────────────────
+document.querySelectorAll('.talla-pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    document.querySelectorAll('.talla-pill').forEach(p => p.classList.remove('selected'));
+    pill.classList.add('selected');
+  });
+});
+
+// ── Semanas — total dinámico ──────────────────────────────
+function calcTotal() {
+  const checked = document.querySelectorAll('.semana-check:checked');
+  const n = checked.length;
+  const total = n * PRECIO_SEMANA;
+
+  document.querySelectorAll('.semana-item').forEach(item => {
+    const cb = item.querySelector('input[type=checkbox]');
+    item.classList.toggle('checked', cb.checked);
+  });
+
+  const label = document.getElementById('totalLabel');
+  const importe = document.getElementById('totalImporte');
+
+  if (n === 0) {
+    label.className = 'total-cero';
+    label.textContent = 'Selecciona al menos una semana';
+  } else {
+    label.className = '';
+    label.textContent = n + ' semana' + (n > 1 ? 's' : '') + ' seleccionada' + (n > 1 ? 's' : '');
+  }
+  importe.textContent = total + ' €';
+}
+
+document.querySelectorAll('.semana-check').forEach(cb => {
+  cb.addEventListener('change', calcTotal);
+});
+
+// ── Navegación entre pasos ────────────────────────────────
+function goTo(step) {
+  if (step > currentStep && !validateStep(currentStep)) return;
+
+  document.getElementById('step-' + currentStep).classList.remove('active');
+  document.getElementById('ind-'  + currentStep).classList.remove('active');
+  document.getElementById('ind-'  + currentStep).classList.add('done');
+
+  if (step < currentStep) {
+    document.getElementById('ind-' + currentStep).classList.remove('done');
+  }
+
+  currentStep = step;
+  document.getElementById('step-' + currentStep).classList.add('active');
+  document.getElementById('ind-'  + currentStep).classList.add('active');
+  document.getElementById('ind-'  + currentStep).classList.remove('done');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function validateStep(step) {
+  const required = document.querySelectorAll('#step-' + step + ' [required]');
+  let ok = true;
+  required.forEach(el => {
+    el.style.borderColor = '';
+    const empty = el.type === 'checkbox' ? !el.checked : !el.value.trim();
+    if (empty) {
+      el.style.borderColor = '#C0392B';
+      ok = false;
+    }
+  });
+  if (!ok) alert('Por favor, completa todos los campos obligatorios (marcados con *).');
+  return ok;
+}
+
+// ── Envío ─────────────────────────────────────────────────
+async function submitForm() {
+  if (!validateStep(4)) return;
+
+  if (!firmas.madre.signed) {
+    alert('Por favor, añade la firma de la madre/tutora antes de enviar.');
+    return;
+  }
+  if (!firmas.alumno.signed) {
+    alert('Por favor, añade la firma del alumno/a antes de enviar.');
+    return;
+  }
+
+  const semanasChecked = [...document.querySelectorAll('.semana-check:checked')];
+  if (semanasChecked.length === 0) {
+    alert('Por favor, selecciona al menos una semana del campus.');
+    goTo(3);
+    return;
+  }
+
+  const btn = document.getElementById('btn-submit');
+  btn.disabled = true;
+  btn.textContent = 'Enviando...';
+
+  const talla = document.querySelector('input[name="talla"]:checked')?.value || '';
+  const semanas = semanasChecked.map(cb => ({
+    semana: cb.value,
+    nombre: cb.dataset.nombre
+  }));
+  const totalEuros = semanas.length * PRECIO_SEMANA;
+
+  const data = {
+    alumno: {
+      nombre:          document.getElementById('nombre').value.trim(),
+      apellido1:       document.getElementById('apellido1').value.trim(),
+      apellido2:       document.getElementById('apellido2').value.trim(),
+      dni:             document.getElementById('dni').value.trim(),
+      fechaNacimiento: document.getElementById('fechaNacimiento').value,
+      email:           document.getElementById('emailAlumno').value.trim(),
+      telefono:        document.getElementById('telefono').value.trim(),
+      direccion:       document.getElementById('direccion').value.trim(),
+      localidad:       document.getElementById('localidad').value.trim(),
+      provincia:       document.getElementById('provincia').value.trim(),
+      codigoPostal:    document.getElementById('cp').value.trim()
+    },
+    madre: {
+      nombre:    document.getElementById('nombreMadre').value.trim(),
+      apellidos: document.getElementById('apellidosMadre').value.trim(),
+      dni:       document.getElementById('dniMadre').value.trim(),
+      telefono:  document.getElementById('telefonoMadre').value.trim(),
+      email:     document.getElementById('emailMadre').value.trim()
+    },
+    padre: {
+      nombre:    document.getElementById('nombrePadre').value.trim(),
+      apellidos: document.getElementById('apellidosPadre').value.trim(),
+      dni:       document.getElementById('dniPadre').value.trim(),
+      telefono:  document.getElementById('telefonoPadre').value.trim(),
+      email:     document.getElementById('emailPadre').value.trim()
+    },
+    adicional: {
+      alergias:   document.getElementById('alergias').value.trim(),
+      medicacion: document.getElementById('medicacion').value.trim(),
+      miedos:     document.getElementById('miedos').value.trim(),
+      talla:      talla,
+      semanas:    semanas,
+      totalEuros: totalEuros
+    },
+    firmas: {
+      madre:  firmas.madre.el.toDataURL('image/png'),
+      padre:  firmas.padre.signed ? firmas.padre.el.toDataURL('image/png') : '',
+      alumno: firmas.alumno.el.toDataURL('image/png')
+    },
+    fechaEnvio: new Date().toISOString()
+  };
+
+  try {
+    const res = await fetch(WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+
+    document.querySelectorAll('.form-step').forEach(s => s.style.display = 'none');
+    document.querySelector('.progress').style.display = 'none';
+
+    if (res.ok) {
+      // Resumen
+      const semanasTexto = semanas.map(s => s.nombre).join(', ');
+      document.getElementById('resumenBox').innerHTML =
+        '<strong>Alumno/a:</strong> ' + data.alumno.nombre + ' ' + data.alumno.apellido1 + '<br>' +
+        '<strong>Semanas:</strong> ' + semanasTexto + '<br>' +
+        '<strong>Total:</strong> ' + totalEuros + ' €<br>' +
+        '<strong>Email:</strong> ' + (data.alumno.email || '—');
+      document.getElementById('success-screen').style.display = 'block';
+    } else {
+      document.getElementById('error-screen').style.display = 'block';
+    }
+  } catch (e) {
+    document.querySelectorAll('.form-step').forEach(s => s.style.display = 'none');
+    document.querySelector('.progress').style.display = 'none';
+    document.getElementById('error-screen').style.display = 'block';
+  }
+}
+</script>
+</body>
+</html>

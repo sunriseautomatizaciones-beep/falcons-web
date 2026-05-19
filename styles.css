@@ -404,6 +404,13 @@ button { cursor: pointer; font-family: inherit; border: none; background: none; 
   justify-content: center;
   margin-top: 8px;
 }
+.hero__ctas-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 16px;
+}
 .hero__inscripcion {
   display: inline-flex;
   flex-direction: column;
@@ -414,7 +421,7 @@ button { cursor: pointer; font-family: inherit; border: none; background: none; 
   text-decoration: none;
   padding: 14px 32px;
   border-radius: 10px;
-  margin-top: 16px;
+  margin-top: 0;
   border: 1px solid rgba(201,168,76,0.5);
   transition: background 0.25s, transform 0.25s, box-shadow 0.25s;
   box-shadow: 0 4px 20px rgba(27,42,74,0.6), 0 0 0 0 rgba(201,168,76,0);
@@ -448,6 +455,59 @@ button { cursor: pointer; font-family: inherit; border: none; background: none; 
   color: rgba(200,212,224,0.85);
   letter-spacing: 0.01em;
 }
+
+/* Campus de Verano CTA button */
+.hero__campus-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: linear-gradient(135deg, #7B4A00 0%, #C9A84C 100%);
+  color: #fff;
+  text-decoration: none;
+  padding: 14px 24px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,220,100,0.4);
+  transition: transform 0.25s, box-shadow 0.25s, filter 0.25s;
+  box-shadow: 0 4px 20px rgba(201,168,76,0.35);
+  position: relative;
+  overflow: hidden;
+}
+.hero__campus-btn::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s ease;
+}
+.hero__campus-btn:hover::after { left: 150%; }
+.hero__campus-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(201,168,76,0.5);
+  filter: brightness(1.08);
+}
+.hero__campus-icon { font-size: 1.5rem; line-height: 1; }
+.hero__campus-text { display: flex; flex-direction: column; gap: 2px; }
+.hero__campus-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+.hero__campus-sub {
+  font-size: 0.78rem;
+  color: rgba(255,245,200,0.9);
+  letter-spacing: 0.01em;
+}
+.hero__campus-arrow {
+  font-size: 1.2rem;
+  opacity: 0.8;
+  transition: transform 0.2s;
+}
+.hero__campus-btn:hover .hero__campus-arrow { transform: translateX(4px); }
+
 .hero__stats {
   display: flex;
   align-items: center;

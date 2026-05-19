@@ -522,6 +522,12 @@ button { cursor: pointer; font-family: inherit; border: none; background: none; 
   justify-content: center;
 }
 .stat { text-align: center; }
+.stat__numrow {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 2px;
+}
 .stat__num {
   display: block;
   font-family: var(--font-head);

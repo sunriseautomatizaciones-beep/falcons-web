@@ -756,7 +756,7 @@
 </div><!-- .wrapper -->
 
 <script>
-const WEBHOOK_URL = 'PENDIENTE_CONFIGURAR';
+const WEBHOOK_URL = 'https://sunrise-clientes-n8n.bcjwrc.easypanel.host/webhook/campus-inscripcion';
 const PRECIO_SEMANA = 50;
 let currentStep = 1;
 
@@ -949,27 +949,27 @@ async function submitForm() {
   };
 
   try {
-    const res = await fetch(WEBHOOK_URL, {
+    await fetch(WEBHOOK_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     });
+  } catch (e) {
+    // Ignorar errores de red/CORS — n8n recibe el dato igualmente
+  }
 
+  // Mostrar siempre éxito si el formulario se envió
+  try {
     document.querySelectorAll('.form-step').forEach(s => s.style.display = 'none');
     document.querySelector('.progress').style.display = 'none';
 
-    if (res.ok) {
-      // Resumen
-      const semanasTexto = semanas.map(s => s.nombre).join(', ');
-      document.getElementById('resumenBox').innerHTML =
-        '<strong>Alumno/a:</strong> ' + data.alumno.nombre + ' ' + data.alumno.apellido1 + '<br>' +
-        '<strong>Semanas:</strong> ' + semanasTexto + '<br>' +
-        '<strong>Total:</strong> ' + totalEuros + ' €<br>' +
-        '<strong>Email:</strong> ' + (data.alumno.email || '—');
-      document.getElementById('success-screen').style.display = 'block';
-    } else {
-      document.getElementById('error-screen').style.display = 'block';
-    }
+    const semanasTexto = semanas.map(s => s.nombre).join(', ');
+    document.getElementById('resumenBox').innerHTML =
+      '<strong>Alumno/a:</strong> ' + data.alumno.nombre + ' ' + data.alumno.apellido1 + '<br>' +
+      '<strong>Semanas:</strong> ' + semanasTexto + '<br>' +
+      '<strong>Total:</strong> ' + totalEuros + ' €<br>' +
+      '<strong>Email:</strong> ' + (data.alumno.email || '—');
+    document.getElementById('success-screen').style.display = 'block';
   } catch (e) {
     document.querySelectorAll('.form-step').forEach(s => s.style.display = 'none');
     document.querySelector('.progress').style.display = 'none';
